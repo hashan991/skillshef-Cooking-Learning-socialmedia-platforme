@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   Card,
   CardContent,
@@ -16,21 +16,29 @@ import {
   Button,
   Snackbar,
   Alert,
+  Avatar,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 function PostCard({ post, onDelete }) {
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext); // ✅ logged-in user
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [toastOpen, setToastOpen] = useState(false);
+  const [postUser, setPostUser] = useState(null);
 
-  const imageUrl =
-    post.mediaUrls?.length > 0
-      ? `http://localhost:8080${post.mediaUrls[0]}`
-      : null;
+  useEffect(() => {
+    if (post.userId) {
+      axios
+        .get(`http://localhost:8080/api/users/${post.userId}`)
+        .then((res) => setPostUser(res.data))
+        .catch((err) => console.error("Failed to fetch user", err));
+    }
+  }, [post.userId]);
 
   const handleEdit = () => {
     navigate(`/edit-post/${post.id}`, { state: { post } });
@@ -40,13 +48,18 @@ function PostCard({ post, onDelete }) {
     try {
       await axios.delete(`http://localhost:8080/api/posts/${post.id}`);
       onDelete(post.id);
-      setToastOpen(true); // ✅ show success toast
+      setToastOpen(true);
     } catch (err) {
       console.error("Delete failed:", err.response?.data || err.message);
     } finally {
-      setConfirmOpen(false); // ✅ close confirm dialog
+      setConfirmOpen(false);
     }
   };
+
+  const imageUrl =
+    post.mediaUrls?.length > 0
+      ? `http://localhost:8080${post.mediaUrls[0]}`
+      : null;
 
   return (
     <>
@@ -56,26 +69,28 @@ function PostCard({ post, onDelete }) {
           margin: "20px auto",
           borderRadius: 4,
           boxShadow: 3,
-          bgcolor: "#fff",
         }}
       >
-        {imageUrl && (
-          <CardMedia
-            component="img"
-            height="300"
-            image={imageUrl}
-            alt={post.title}
-            sx={{ objectFit: "cover" }}
-          />
-        )}
+        {/* 🧑‍🍳 Top User Info Row */}
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          px={2}
+          pt={2}
+        >
+          <Box display="flex" alignItems="center" gap={1}>
+            <Avatar
+              src={`http://localhost:8080${postUser?.profilePic}`}
+              alt={postUser?.username}
+            />
+            <Typography variant="subtitle2" fontWeight={600}>
+              {postUser?.username}
+            </Typography>
+          </Box>
 
-        <CardContent>
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Typography variant="h6">{post.title}</Typography>
+          {/* ✏️ Show only if owner */}
+          {user?.id === post.userId && (
             <Stack direction="row" spacing={1}>
               <IconButton color="primary" onClick={handleEdit}>
                 <EditIcon />
@@ -84,7 +99,22 @@ function PostCard({ post, onDelete }) {
                 <DeleteIcon />
               </IconButton>
             </Stack>
-          </Box>
+          )}
+        </Box>
+
+        {/* 📷 Post Media */}
+        {imageUrl && (
+          <CardMedia
+            component="img"
+            height="300"
+            image={imageUrl}
+            alt={post.title}
+            sx={{ objectFit: "cover", mt: 1 }}
+          />
+        )}
+
+        <CardContent>
+          <Typography variant="h6">{post.title}</Typography>
 
           {post.difficulty && (
             <Chip
@@ -112,13 +142,12 @@ function PostCard({ post, onDelete }) {
         </CardContent>
       </Card>
 
-      {/* ✅ Confirmation Dialog */}
+      {/* Confirm Delete */}
       <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete this post? This action cannot be
-            undone.
+            Are you sure you want to delete this post?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -129,7 +158,7 @@ function PostCard({ post, onDelete }) {
         </DialogActions>
       </Dialog>
 
-      {/* ✅ Success Toast */}
+      {/* Success Toast */}
       <Snackbar
         open={toastOpen}
         autoHideDuration={3000}

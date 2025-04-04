@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { AuthContext } from "../context/AuthContext"; // ✅ Import context
 import {
   Box,
   Button,
@@ -10,13 +11,14 @@ import {
 import axios from "axios";
 
 function PostForm() {
+  const { user } = useContext(AuthContext); // ✅ Get user from context
+
   const [form, setForm] = useState({
     title: "",
     description: "",
     category: "",
     difficulty: "",
     hashtags: "",
-    userId: "user123",
   });
 
   const [files, setFiles] = useState([]);
@@ -29,6 +31,7 @@ function PostForm() {
     setFiles(Array.from(e.target.files));
   };
 
+ 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -37,8 +40,8 @@ function PostForm() {
     formData.append("description", form.description);
     formData.append("category", form.category);
     formData.append("difficulty", form.difficulty);
-    formData.append("userId", form.userId);
     formData.append("hashtags", form.hashtags);
+    formData.append("userId", user?.id); // ✅ Dynamically set userId
 
     files.forEach((file) => {
       formData.append("files", file);
