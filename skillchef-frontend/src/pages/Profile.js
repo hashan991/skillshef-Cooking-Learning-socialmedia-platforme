@@ -23,7 +23,6 @@ function Profile() {
     bio: "",
     location: "",
     profilePic: "",
-    password: "",
   });
 
   const [file, setFile] = useState(null);
@@ -43,7 +42,6 @@ function Profile() {
           bio: data.bio || "",
           location: data.location || "",
           profilePic: data.profilePic || "",
-          password: "",
         });
       });
     }
@@ -63,7 +61,6 @@ function Profile() {
       formData.append("username", form.username);
       formData.append("bio", form.bio);
       formData.append("location", form.location);
-      if (form.password) formData.append("password", form.password);
       if (file) formData.append("file", file);
 
       const res = await axios.put(
@@ -81,7 +78,6 @@ function Profile() {
         bio: updated.bio || "",
         location: updated.location || "",
         profilePic: updated.profilePic || "",
-        password: "",
       });
 
       setToast({
@@ -140,14 +136,6 @@ function Profile() {
           name="location"
           value={form.location}
           onChange={handleChange}
-        />
-        <TextField
-          label="New Password"
-          name="password"
-          type="password"
-          value={form.password}
-          onChange={handleChange}
-          helperText="Leave blank to keep current password"
         />
         <Button variant="contained" onClick={handleUpdate}>
           Update Profile

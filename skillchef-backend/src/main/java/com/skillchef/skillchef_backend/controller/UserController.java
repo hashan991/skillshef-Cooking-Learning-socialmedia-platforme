@@ -22,7 +22,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // ✅ Register new user
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody UserRegisterDTO userDto) {
         if (userService.existsByEmail(userDto.getEmail())) {
@@ -36,14 +35,13 @@ public class UserController {
                 userDto.getBio(),
                 userDto.getProfilePic(),
                 userDto.getLocation(),
-                null // joinedAt set in service
+                null
         );
 
         User registered = userService.register(user);
         return ResponseEntity.ok(new UserResponseDTO(registered));
     }
 
-    // ✅ Login user
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserLoginDTO loginDto) {
         return userService
@@ -52,14 +50,20 @@ public class UserController {
                 .orElseGet(() -> ResponseEntity.status(401).body("Invalid credentials"));
     }
 
-    // ✅ Update user with profile image (multipart/form-data)
     @PutMapping(value = "/{id}", consumes = "multipart/form-data")
     public ResponseEntity<?> updateWithImage(
             @PathVariable String id,
-            @RequestPart("user") User user,
+            @RequestPart("username") String username,
+            @RequestPart("bio") String bio,
+            @RequestPart("location") String location,
             @RequestPart(value = "file", required = false) MultipartFile file
     ) {
         try {
+            User user = userService.getUserById(id).orElseThrow(() -> new RuntimeException("User not found"));
+            user.setUsername(username);
+            user.setBio(bio);
+            user.setLocation(location);
+
             if (file != null && !file.isEmpty()) {
                 String uploadDir = System.getProperty("user.dir") + "/skillchef-backend/uploads/";
                 String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename().replaceAll(" ", "_");
@@ -69,20 +73,19 @@ public class UserController {
                 user.setProfilePic("/uploads/" + fileName);
             }
 
-            return ResponseEntity.ok(new UserResponseDTO(userService.updateUser(id, user)));
+            User updatedUser = userService.updateUser(id, user);
+            return ResponseEntity.ok(new UserResponseDTO(updatedUser));
         } catch (IOException e) {
             return ResponseEntity.status(500).body("Profile image upload failed");
         }
     }
 
-    // ✅ Delete user
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable String id) {
         userService.deleteUser(id);
         return ResponseEntity.ok("User deleted");
     }
 
-    // ✅ Get user by ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable String id) {
         return userService.getUserById(id)
