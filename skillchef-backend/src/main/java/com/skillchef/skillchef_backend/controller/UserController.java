@@ -80,6 +80,26 @@ public class UserController {
         }
     }
 
+    @PutMapping("/{userId}/follow/{targetId}")
+    public ResponseEntity<?> followUser(@PathVariable String userId, @PathVariable String targetId) {
+        try {
+            User updated = userService.follow(userId, targetId);
+            return ResponseEntity.ok(new UserResponseDTO(updated));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Follow failed: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/{userId}/unfollow/{targetId}")
+    public ResponseEntity<?> unfollowUser(@PathVariable String userId, @PathVariable String targetId) {
+        try {
+            User updated = userService.unfollow(userId, targetId);
+            return ResponseEntity.ok(new UserResponseDTO(updated));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Unfollow failed: " + e.getMessage());
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable String id) {
         userService.deleteUser(id);

@@ -7,7 +7,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -21,6 +21,8 @@ public class UserServiceImpl implements UserService {
     public User register(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setJoinedAt(LocalDateTime.now().toString());
+        user.setFollowers(new HashSet<>());
+        user.setFollowing(new HashSet<>());
         return userRepo.save(user);
     }
 
@@ -41,8 +43,6 @@ public class UserServiceImpl implements UserService {
         user.setLocation(updatedUser.getLocation());
         user.setProfilePic(updatedUser.getProfilePic());
 
-       
-
         return userRepo.save(user);
     }
 
@@ -59,5 +59,33 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean existsByEmail(String email) {
         return userRepo.findByEmail(email).isPresent();
+    }
+
+    // ✅ Follow a user
+    public User follow(String userId, String targetId) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        User target = userRepo.findById(targetId)
+                .orElseThrow(() -> new RuntimeException("Target user not found"));
+
+        user.getFollowing().add(targetId);
+        target.getFollowers().add(userId);
+
+        userRepo.save(target);
+        return userRepo.save(user);
+    }
+
+    // ✅ Unfollow a user
+    public User unfollow(String userId, String targetId) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        User target = userRepo.findById(targetId)
+                .orElseThrow(() -> new RuntimeException("Target user not found"));
+
+        user.getFollowing().remove(targetId);
+        target.getFollowers().remove(userId);
+
+        userRepo.save(target);
+        return userRepo.save(user);
     }
 }

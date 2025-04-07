@@ -1,5 +1,8 @@
 package com.skillchef.skillchef_backend.model;
 
+import java.util.Set;
+import java.util.HashSet;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -11,11 +14,14 @@ public class User {
     private String username;
     private String email;
     private String password;
-
     private String bio;
     private String profilePic;
     private String location;
     private String joinedAt;
+
+    // ✅ Add these two fields
+    private Set<String> followers = new HashSet<>();
+    private Set<String> following = new HashSet<>();
 
     public User() {}
 
@@ -27,6 +33,8 @@ public class User {
         this.profilePic = profilePic;
         this.location = location;
         this.joinedAt = joinedAt;
+        this.followers = new HashSet<>();
+        this.following = new HashSet<>();
     }
 
     public String getId() { return id; }
@@ -51,4 +59,11 @@ public class User {
 
     public String getJoinedAt() { return joinedAt; }
     public void setJoinedAt(String joinedAt) { this.joinedAt = joinedAt; }
+
+    // ✅ Add getters and setters
+    public Set<String> getFollowers() { return followers; }
+    public void setFollowers(Set<String> followers) { this.followers = followers; }
+
+    public Set<String> getFollowing() { return following; }
+    public void setFollowing(Set<String> following) { this.following = following; }
 }

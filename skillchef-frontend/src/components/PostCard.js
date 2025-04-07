@@ -79,7 +79,14 @@ function PostCard({ post, onDelete }) {
           px={2}
           pt={2}
         >
-          <Box display="flex" alignItems="center" gap={1}>
+          {/* ✅ Only make user info clickable */}
+          <Box
+            display="flex"
+            alignItems="center"
+            gap={1}
+            sx={{ cursor: "pointer" }}
+            onClick={() => navigate(`/account/${post.userId}`)}
+          >
             <Avatar
               src={`http://localhost:8080${postUser?.profilePic}`}
               alt={postUser?.username}
@@ -89,7 +96,7 @@ function PostCard({ post, onDelete }) {
             </Typography>
           </Box>
 
-          {/* ✏️ Show only if owner */}
+          {/* 🛠️ Now icons won’t trigger the profile link */}
           {user?.id === post.userId && (
             <Stack direction="row" spacing={1}>
               <IconButton color="primary" onClick={handleEdit}>

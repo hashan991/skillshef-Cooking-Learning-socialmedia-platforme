@@ -10,7 +10,9 @@ public interface UserService {
     User updateUser(String id, User updatedUser);
     void deleteUser(String id);
     Optional<User> getUserById(String id);
-
-    // ✅ Add this to fix the error in UserController
     boolean existsByEmail(String email);
+
+    // ✅ Add follow/unfollow methods
+    User follow(String userId, String targetId);
+    User unfollow(String userId, String targetId);
 }
