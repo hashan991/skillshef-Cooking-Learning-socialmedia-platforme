@@ -11,18 +11,18 @@ import {
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import FollowersModal from "../components/FollowersModal"; // ✅ Import modal
+import FollowersModal from "../components/FollowersModal";
 
 function MyAccount() {
   const { user } = useContext(AuthContext);
-  const { id } = useParams(); // userId in the URL
+  const { id } = useParams();
   const [profile, setProfile] = useState(null);
+  const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-
   const [showFollowers, setShowFollowers] = useState(false);
   const [showFollowing, setShowFollowing] = useState(false);
 
+  const navigate = useNavigate();
   const isOwnProfile = !id || id === user?.id;
 
   useEffect(() => {
@@ -38,21 +38,33 @@ function MyAccount() {
       }
     };
 
-    if (user) fetchProfile();
+    const fetchUserPosts = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:8080/api/posts/user/${id || user.id}`
+        );
+        setPosts(res.data);
+      } catch (err) {
+        console.error("❌ Failed to fetch user posts:", err.message);
+      }
+    };
+
+    if (user) {
+      fetchProfile();
+      fetchUserPosts();
+    }
   }, [id, user]);
 
   const isFollowing = profile?.followers?.includes(user?.id);
 
   const handleFollowToggle = async () => {
     if (!user || !profile) return;
-
     try {
       setLoading(true);
       const url = `http://localhost:8080/api/users/${user.id}/${
         isFollowing ? "unfollow" : "follow"
       }/${profile.id}`;
       await axios.put(url);
-
       const updated = await axios.get(
         `http://localhost:8080/api/users/${profile.id}`
       );
@@ -86,23 +98,21 @@ function MyAccount() {
         <Typography>{profile.bio}</Typography>
         <Typography color="text.secondary">{profile.location}</Typography>
 
-        {/* 👉 Follower/Following Count */}
         <Stack direction="row" spacing={4} justifyContent="center">
           <Typography
             sx={{ cursor: "pointer" }}
             onClick={() => setShowFollowers(true)}
           >
-            <strong>{profile.followerCount}</strong> followers
+            <strong>{profile.followers?.length || 0}</strong> followers
           </Typography>
           <Typography
             sx={{ cursor: "pointer" }}
             onClick={() => setShowFollowing(true)}
           >
-            <strong>{profile.followingCount}</strong> following
+            <strong>{profile.following?.length || 0}</strong> following
           </Typography>
         </Stack>
 
-        {/* 👉 Follow / Unfollow */}
         {!isOwnProfile && (
           <Box mt={2}>
             <Button
@@ -116,7 +126,6 @@ function MyAccount() {
           </Box>
         )}
 
-        {/* 👉 Manage My Account */}
         {isOwnProfile && (
           <Box mt={2}>
             <Button variant="outlined" onClick={() => navigate("/profile")}>
@@ -126,7 +135,7 @@ function MyAccount() {
         )}
       </Stack>
 
-      {/* 👇 Followers/Following Modal */}
+      {/* Followers/Following Modal */}
       <FollowersModal
         open={showFollowers}
         onClose={() => setShowFollowers(false)}
@@ -139,6 +148,42 @@ function MyAccount() {
         userIds={profile.following}
         title="Following"
       />
+
+      {/* 👇 Show user's post thumbnails */}
+      <Box mt={5}>
+        <Typography variant="h6" gutterBottom>
+          Posts
+        </Typography>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
+            gap: 2,
+          }}
+        >
+          {posts.length > 0 ? (
+            posts.map((post) =>
+              post.mediaUrls?.[0] ? (
+                <img
+                  key={post.id}
+                  src={`http://localhost:8080${post.mediaUrls[0]}`}
+                  alt={post.title}
+                  style={{
+                    width: "100%",
+                    height: "120px",
+                    objectFit: "cover",
+                    borderRadius: 8,
+                    cursor: "pointer",
+                  }}
+                  onClick={() => navigate(`/post/${post.id}`)}
+                />
+              ) : null
+            )
+          ) : (
+            <Typography color="text.secondary">No posts to show.</Typography>
+          )}
+        </Box>
+      </Box>
     </Container>
   );
 }

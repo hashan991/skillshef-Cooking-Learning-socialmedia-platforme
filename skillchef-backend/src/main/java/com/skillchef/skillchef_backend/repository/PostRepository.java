@@ -9,8 +9,13 @@ import java.util.List;
 @Repository
 public interface PostRepository extends MongoRepository<Post, String> {
 
-    // Custom queries for filtering
+    // ✅ Custom query to find posts by userId
+    List<Post> findByUserId(String userId);
+
+    // Other filtering queries
     List<Post> findByCategory(String category);
+
     List<Post> findByDifficulty(String difficulty);
+
     List<Post> findByHashtagsIn(List<String> hashtags);
 }

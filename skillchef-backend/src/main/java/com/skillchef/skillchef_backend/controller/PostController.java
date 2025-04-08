@@ -145,4 +145,12 @@ public class PostController {
     public void deletePost(@PathVariable String id) {
         postService.deletePost(id);
     }
+
+
+    // ✅ Get All Posts By a Specific User
+@GetMapping("/user/{userId}")
+public List<PostResponseDTO> getPostsByUserId(@PathVariable String userId) {
+    return postService.getPostsByUserId(userId);
+}
+
 }

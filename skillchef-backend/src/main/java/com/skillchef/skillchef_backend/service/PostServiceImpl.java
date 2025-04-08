@@ -70,19 +70,26 @@ public class PostServiceImpl implements PostService {
         postRepository.deleteById(id);
     }
 
-    // ✅ Save post directly (used in file-upload endpoints)
     @Override
     public void savePost(Post post) {
         postRepository.save(post);
     }
 
-    // ✅ Get the raw Post entity by ID
     @Override
     public Optional<Post> findPostByIdRaw(String id) {
         return postRepository.findById(id);
     }
 
-    // ✅ Convert Post entity to PostResponseDTO
+    // ✅ New: Get posts by user ID
+    @Override
+    public List<PostResponseDTO> getPostsByUserId(String userId) {
+        List<Post> posts = postRepository.findByUserId(userId);
+        return posts.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    // ✅ Convert entity to DTO
     private PostResponseDTO mapToDTO(Post post) {
         PostResponseDTO dto = new PostResponseDTO();
         dto.setId(post.getId());

@@ -11,6 +11,7 @@ import Startup from "./pages/Startup";
 import Navbar from "./components/Navbar";
 import Profile from "./pages/Profile";
 import MyAccount from "./pages/MyAccount";
+import PostDetail from "./pages/PostDetail";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/account/:id" element={<MyAccount />} />
         <Route path="/account" element={<MyAccount />} />
+        <Route path="/post/:id" element={<PostDetail/>} />
       </Routes>
     </Router>
   );

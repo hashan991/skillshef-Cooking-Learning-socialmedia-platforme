@@ -8,10 +8,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PostService {
+
     PostResponseDTO createPost(PostRequestDTO postRequestDTO);
+
     List<PostResponseDTO> getAllPosts();
+
     PostResponseDTO getPostById(String id);
+
     PostResponseDTO updatePost(String id, PostRequestDTO postRequestDTO);
+
     void deletePost(String id);
 
     // ✅ For saving new or updated Post with files
@@ -19,4 +24,7 @@ public interface PostService {
 
     // ✅ Needed to fetch raw Post entity (not DTO)
     Optional<Post> findPostByIdRaw(String id);
+
+    // ✅ NEW: Get all posts created by a specific user
+    List<PostResponseDTO> getPostsByUserId(String userId);
 }
