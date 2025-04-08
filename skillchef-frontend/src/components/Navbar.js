@@ -35,6 +35,12 @@ function Navbar() {
                 <Button color="inherit" component={Link} to="/create">
                   Create Post
                 </Button>
+                <Button color="inherit" component={Link} to="/*">
+                  Learning Progress
+                </Button>
+                <Button color="inherit" component={Link} to="/*">
+                  Learning Plan 
+                </Button>
                 <Button color="inherit" component={Link} to="/account">
                   My Profile
                 </Button>

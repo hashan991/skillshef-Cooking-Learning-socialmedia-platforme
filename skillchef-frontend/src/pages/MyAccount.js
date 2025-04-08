@@ -21,6 +21,7 @@ function MyAccount() {
   const [loading, setLoading] = useState(false);
   const [showFollowers, setShowFollowers] = useState(false);
   const [showFollowing, setShowFollowing] = useState(false);
+  const [selectedView, setSelectedView] = useState("POSTS");
 
   const navigate = useNavigate();
   const isOwnProfile = !id || id === user?.id;
@@ -149,40 +150,73 @@ function MyAccount() {
         title="Following"
       />
 
-      {/* 👇 Show user's post thumbnails */}
+      {/* Toggle buttons for views */}
       <Box mt={5}>
+        <Stack direction="row" spacing={2} justifyContent="center" mb={2}>
+          <Button
+            variant={selectedView === "POSTS" ? "contained" : "outlined"}
+            onClick={() => setSelectedView("POSTS")}
+          >
+            Posts
+          </Button>
+          <Button
+            variant={selectedView === "PROGRESS" ? "contained" : "outlined"}
+            onClick={() => setSelectedView("PROGRESS")}
+          >
+            Learning Progress Updates
+          </Button>
+          <Button
+            variant={selectedView === "PLAN" ? "contained" : "outlined"}
+            onClick={() => setSelectedView("PLAN")}
+          >
+            Learning Plan Sharing
+          </Button>
+        </Stack>
+
         <Typography variant="h6" gutterBottom>
-          Posts
+          {selectedView === "POSTS"
+            ? "Posts"
+            : selectedView === "PROGRESS"
+            ? "Learning Progress"
+            : "Learning Plan Sharing"}
         </Typography>
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
-            gap: 2,
-          }}
-        >
-          {posts.length > 0 ? (
-            posts.map((post) =>
-              post.mediaUrls?.[0] ? (
-                <img
-                  key={post.id}
-                  src={`http://localhost:8080${post.mediaUrls[0]}`}
-                  alt={post.title}
-                  style={{
-                    width: "100%",
-                    height: "120px",
-                    objectFit: "cover",
-                    borderRadius: 8,
-                    cursor: "pointer",
-                  }}
-                  onClick={() => navigate(`/post/${post.id}`)}
-                />
-              ) : null
-            )
-          ) : (
-            <Typography color="text.secondary">No posts to show.</Typography>
-          )}
-        </Box>
+
+        {/* ✅ Show post thumbnails only if POSTS is selected */}
+        {selectedView === "POSTS" && (
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
+              gap: 2,
+            }}
+          >
+            {posts.length > 0 ? (
+              posts
+                .filter((post) => {
+                  return true; // Can add filtering by post.category if needed
+                })
+                .map((post) =>
+                  post.mediaUrls?.[0] ? (
+                    <img
+                      key={post.id}
+                      src={`http://localhost:8080${post.mediaUrls[0]}`}
+                      alt={post.title}
+                      style={{
+                        width: "100%",
+                        height: "120px",
+                        objectFit: "cover",
+                        borderRadius: 8,
+                        cursor: "pointer",
+                      }}
+                      onClick={() => navigate(`/post/${post.id}`)}
+                    />
+                  ) : null
+                )
+            ) : (
+              <Typography color="text.secondary">No posts to show.</Typography>
+            )}
+          </Box>
+        )}
       </Box>
     </Container>
   );
