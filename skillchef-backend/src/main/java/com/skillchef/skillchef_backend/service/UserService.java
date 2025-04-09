@@ -2,6 +2,7 @@ package com.skillchef.skillchef_backend.service;
 
 import com.skillchef.skillchef_backend.model.User;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
@@ -12,7 +13,10 @@ public interface UserService {
     Optional<User> getUserById(String id);
     boolean existsByEmail(String email);
 
-    // ✅ Add follow/unfollow methods
+    // ✅ Follow/Unfollow
     User follow(String userId, String targetId);
     User unfollow(String userId, String targetId);
+
+    // ✅ Suggest users to follow
+    List<User> suggestUsersToFollow(String userId);
 }

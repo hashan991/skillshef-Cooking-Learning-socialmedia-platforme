@@ -36,10 +36,10 @@ function Navbar() {
                   Create Post
                 </Button>
                 <Button color="inherit" component={Link} to="/*">
-                  Learning Progress
+                   Progress
                 </Button>
                 <Button color="inherit" component={Link} to="/*">
-                  Learning Plan 
+                   Plan 
                 </Button>
                 <Button color="inherit" component={Link} to="/account">
                   My Profile

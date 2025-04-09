@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -111,5 +112,10 @@ public class UserController {
         return userService.getUserById(id)
                 .map(user -> ResponseEntity.ok(new UserResponseDTO(user)))
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/suggestions/{userId}")
+    public List<User> suggestUsers(@PathVariable String userId) {
+        return userService.suggestUsersToFollow(userId);
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -61,7 +62,7 @@ public class UserServiceImpl implements UserService {
         return userRepo.findByEmail(email).isPresent();
     }
 
-    // ✅ Follow a user
+    @Override
     public User follow(String userId, String targetId) {
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -75,7 +76,7 @@ public class UserServiceImpl implements UserService {
         return userRepo.save(user);
     }
 
-    // ✅ Unfollow a user
+    @Override
     public User unfollow(String userId, String targetId) {
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -87,5 +88,20 @@ public class UserServiceImpl implements UserService {
 
         userRepo.save(target);
         return userRepo.save(user);
+    }
+
+    // ✅ Suggest users that the current user is not already following
+    @Override
+    public List<User> suggestUsersToFollow(String userId) {
+        User currentUser = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Set<String> following = currentUser.getFollowing();
+
+        return userRepo.findAll().stream()
+                .filter(user -> !user.getId().equals(userId)) // exclude self
+                .filter(user -> !following.contains(user.getId())) // exclude already followed
+                .limit(5) // limit suggestions
+                .collect(Collectors.toList());
     }
 }
