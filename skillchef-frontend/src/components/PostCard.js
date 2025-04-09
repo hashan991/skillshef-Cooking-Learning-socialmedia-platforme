@@ -17,19 +17,22 @@ import {
   Snackbar,
   Alert,
   Avatar,
+  Tooltip,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ShareIcon from "@mui/icons-material/Share";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
 function PostCard({ post, onDelete }) {
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext); // ✅ logged-in user
+  const { user } = useContext(AuthContext);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [toastOpen, setToastOpen] = useState(false);
   const [postUser, setPostUser] = useState(null);
+  const [shareToast, setShareToast] = useState(false);
 
   useEffect(() => {
     if (post.userId) {
@@ -53,6 +56,22 @@ function PostCard({ post, onDelete }) {
       console.error("Delete failed:", err.response?.data || err.message);
     } finally {
       setConfirmOpen(false);
+    }
+  };
+
+  const handleShare = () => {
+    const postUrl = `${window.location.origin}/post/${post.id}`;
+    if (navigator.share) {
+      navigator
+        .share({
+          title: post.title,
+          text: "Check out this recipe on SkillChef!",
+          url: postUrl,
+        })
+        .catch((err) => console.error("Share failed:", err));
+    } else {
+      navigator.clipboard.writeText(postUrl);
+      setShareToast(true);
     }
   };
 
@@ -96,17 +115,24 @@ function PostCard({ post, onDelete }) {
             </Typography>
           </Box>
 
-          {/* 🛠️ Now icons won’t trigger the profile link */}
-          {user?.id === post.userId && (
-            <Stack direction="row" spacing={1}>
-              <IconButton color="primary" onClick={handleEdit}>
-                <EditIcon />
+          {/* 🛠️ Icons (Edit/Delete/Share) */}
+          <Stack direction="row" spacing={1}>
+            {user?.id === post.userId && (
+              <>
+                <IconButton color="primary" onClick={handleEdit}>
+                  <EditIcon />
+                </IconButton>
+                <IconButton color="error" onClick={() => setConfirmOpen(true)}>
+                  <DeleteIcon />
+                </IconButton>
+              </>
+            )}
+            <Tooltip title="Share this post">
+              <IconButton onClick={handleShare}>
+                <ShareIcon />
               </IconButton>
-              <IconButton color="error" onClick={() => setConfirmOpen(true)}>
-                <DeleteIcon />
-              </IconButton>
-            </Stack>
-          )}
+            </Tooltip>
+          </Stack>
         </Box>
 
         {/* 📷 Post Media */}
@@ -165,7 +191,7 @@ function PostCard({ post, onDelete }) {
         </DialogActions>
       </Dialog>
 
-      {/* Success Toast */}
+      {/* Delete Toast */}
       <Snackbar
         open={toastOpen}
         autoHideDuration={3000}
@@ -178,6 +204,22 @@ function PostCard({ post, onDelete }) {
           variant="filled"
         >
           Post deleted successfully!
+        </Alert>
+      </Snackbar>
+
+      {/* Share Toast */}
+      <Snackbar
+        open={shareToast}
+        autoHideDuration={3000}
+        onClose={() => setShareToast(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setShareToast(false)}
+          severity="info"
+          variant="filled"
+        >
+          Post link copied to clipboard!
         </Alert>
       </Snackbar>
     </>
