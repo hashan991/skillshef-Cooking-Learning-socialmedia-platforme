@@ -9,10 +9,11 @@ import {
   Stack,
 } from "@mui/material";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function PostForm() {
   const { user } = useContext(AuthContext); // ✅ Get user from context
-
+   const navigate = useNavigate();
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -65,6 +66,7 @@ function PostForm() {
         userId: "user123",
       });
       setFiles([]);
+       navigate("/home");
     } catch (err) {
       console.error(err);
       alert("Error creating post.");

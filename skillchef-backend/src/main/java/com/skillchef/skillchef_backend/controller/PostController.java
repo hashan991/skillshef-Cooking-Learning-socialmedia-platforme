@@ -5,6 +5,9 @@ import com.skillchef.skillchef_backend.dto.PostResponseDTO;
 import com.skillchef.skillchef_backend.model.Post;
 import com.skillchef.skillchef_backend.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,6 +17,8 @@ import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+
 @RestController
 @RequestMapping("/api/posts")
 @CrossOrigin(origins = "*")
@@ -22,7 +27,6 @@ public class PostController {
     @Autowired
     private PostService postService;
 
-    // ✅ Create Post with File Upload
     @PostMapping(consumes = {"multipart/form-data"})
     public ResponseEntity<String> createPostWithFiles(
             @RequestParam("title") String title,
@@ -39,8 +43,7 @@ public class PostController {
 
             for (MultipartFile file : files) {
                 if (!file.isEmpty()) {
-                    String safeFileName = UUID.randomUUID() + "_" +
-                            file.getOriginalFilename().replaceAll(" ", "_");
+                    String safeFileName = UUID.randomUUID() + "_" + file.getOriginalFilename().replaceAll(" ", "_");
                     Path filePath = Paths.get(uploadDir + safeFileName);
                     Files.createDirectories(filePath.getParent());
                     Files.write(filePath, file.getBytes());
@@ -67,18 +70,21 @@ public class PostController {
 
             return ResponseEntity.ok("Post created successfully with uploaded images.");
         } catch (IOException e) {
-            e.printStackTrace();
             return ResponseEntity.status(500).body("File upload failed: " + e.getMessage());
         }
     }
 
-    // ✅ Update Post (Text Only)
     @PutMapping("/{id}")
-    public PostResponseDTO updatePost(@PathVariable String id, @RequestBody PostRequestDTO postRequestDTO) {
-        return postService.updatePost(id, postRequestDTO);
+    public EntityModel<PostResponseDTO> updatePost(@PathVariable String id, @RequestBody PostRequestDTO dto) {
+        PostResponseDTO updatedPost = postService.updatePost(id, dto);
+
+        return EntityModel.of(updatedPost,
+                linkTo(methodOn(PostController.class).getPostById(id)).withSelfRel(),
+                linkTo(methodOn(PostController.class).deletePost(id)).withRel("delete"),
+                linkTo(methodOn(PostController.class).getAllPosts()).withRel("all-posts")
+        );
     }
 
-    // ✅ Update Post With New Images
     @PutMapping(value = "/{id}/with-images", consumes = "multipart/form-data")
     public ResponseEntity<String> updatePostWithFiles(
             @PathVariable String id,
@@ -102,15 +108,14 @@ public class PostController {
 
                 for (MultipartFile file : files) {
                     if (!file.isEmpty()) {
-                        String safeFileName = UUID.randomUUID() + "_" +
-                                file.getOriginalFilename().replaceAll(" ", "_");
+                        String safeFileName = UUID.randomUUID() + "_" + file.getOriginalFilename().replaceAll(" ", "_");
                         Path filePath = Paths.get(uploadDir + safeFileName);
                         Files.createDirectories(filePath.getParent());
                         Files.write(filePath, file.getBytes());
                         newImagePaths.add("/uploads/" + safeFileName);
                     }
                 }
-                post.setMediaUrls(newImagePaths); // Replace old images
+                post.setMediaUrls(newImagePaths);
             }
 
             post.setTitle(title);
@@ -123,34 +128,45 @@ public class PostController {
             postService.savePost(post);
             return ResponseEntity.ok("Post updated with new images!");
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.status(500).body("Update failed: " + e.getMessage());
         }
     }
 
-    // ✅ Get All Posts
     @GetMapping
-    public List<PostResponseDTO> getAllPosts() {
-        return postService.getAllPosts();
+    public List<EntityModel<PostResponseDTO>> getAllPosts() {
+        List<PostResponseDTO> posts = postService.getAllPosts();
+        List<EntityModel<PostResponseDTO>> result = new ArrayList<>();
+
+        for (PostResponseDTO post : posts) {
+            EntityModel<PostResponseDTO> model = EntityModel.of(post,
+                    linkTo(methodOn(PostController.class).getPostById(post.getId())).withSelfRel(),
+                    linkTo(methodOn(PostController.class).deletePost(post.getId())).withRel("delete"),
+                    linkTo(methodOn(PostController.class).getAllPosts()).withRel("all-posts")
+            );
+            result.add(model);
+        }
+
+        return result;
     }
 
-    // ✅ Get Post By ID
     @GetMapping("/{id}")
-    public PostResponseDTO getPostById(@PathVariable String id) {
-        return postService.getPostById(id);
+    public EntityModel<PostResponseDTO> getPostById(@PathVariable String id) {
+        PostResponseDTO post = postService.getPostById(id);
+        return EntityModel.of(post,
+                linkTo(methodOn(PostController.class).getPostById(id)).withSelfRel(),
+                linkTo(methodOn(PostController.class).getAllPosts()).withRel("all-posts"),
+                linkTo(methodOn(PostController.class).deletePost(id)).withRel("delete")
+        );
     }
 
-    // ✅ Delete Post
     @DeleteMapping("/{id}")
-    public void deletePost(@PathVariable String id) {
+    public ResponseEntity<?> deletePost(@PathVariable String id) {
         postService.deletePost(id);
+        return ResponseEntity.ok("Deleted");
     }
 
-
-    // ✅ Get All Posts By a Specific User
-@GetMapping("/user/{userId}")
-public List<PostResponseDTO> getPostsByUserId(@PathVariable String userId) {
-    return postService.getPostsByUserId(userId);
-}
-
+    @GetMapping("/user/{userId}")
+    public List<PostResponseDTO> getPostsByUserId(@PathVariable String userId) {
+        return postService.getPostsByUserId(userId);
+    }
 }

@@ -52,6 +52,7 @@ function PostCard({ post, onDelete }) {
       await axios.delete(`http://localhost:8080/api/posts/${post.id}`);
       onDelete(post.id);
       setToastOpen(true);
+        navigate("/home");
     } catch (err) {
       console.error("Delete failed:", err.response?.data || err.message);
     } finally {

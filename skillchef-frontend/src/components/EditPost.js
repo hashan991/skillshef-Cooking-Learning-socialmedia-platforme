@@ -77,7 +77,7 @@ function EditPost() {
       );
 
       setToastOpen(true);
-      setTimeout(() => navigate("/"), 1000); // redirect after toast
+      setTimeout(() => navigate("/home"), 1000); // redirect after toast
     } catch (err) {
       console.error("Update failed:", err);
     }

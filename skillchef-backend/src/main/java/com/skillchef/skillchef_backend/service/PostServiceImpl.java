@@ -9,8 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -80,16 +79,14 @@ public class PostServiceImpl implements PostService {
         return postRepository.findById(id);
     }
 
-    // ✅ New: Get posts by user ID
     @Override
     public List<PostResponseDTO> getPostsByUserId(String userId) {
-        List<Post> posts = postRepository.findByUserId(userId);
-        return posts.stream()
+        return postRepository.findByUserId(userId).stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
 
-    // ✅ Convert entity to DTO
+    // ✅ HATEOAS Helper
     private PostResponseDTO mapToDTO(Post post) {
         PostResponseDTO dto = new PostResponseDTO();
         dto.setId(post.getId());
@@ -101,6 +98,16 @@ public class PostServiceImpl implements PostService {
         dto.setDifficulty(post.getDifficulty());
         dto.setUserId(post.getUserId());
         dto.setCreatedAt(post.getCreatedAt());
+
+        // ✅ Add HATEOAS links
+        Map<String, String> links = new HashMap<>();
+        links.put("self", "/api/posts/" + post.getId());
+        links.put("update", "/api/posts/" + post.getId());
+        links.put("delete", "/api/posts/" + post.getId());
+        links.put("user", "/api/users/" + post.getUserId());
+
+        dto.set_links(links);
+
         return dto;
     }
 }

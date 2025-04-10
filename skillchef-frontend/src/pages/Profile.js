@@ -8,6 +8,9 @@ import {
   Snackbar,
   Alert,
   Avatar,
+  Paper,
+  Divider,
+  useTheme,
 } from "@mui/material";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
@@ -16,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 function Profile() {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const [form, setForm] = useState({
     username: "",
@@ -85,10 +89,14 @@ function Profile() {
         message: "Profile updated!",
         severity: "success",
       });
+
+      // Navigate to /account/:id after update
+      navigate(`/account/${user.id}`);
     } catch (err) {
       setToast({ open: true, message: "Update failed", severity: "error" });
     }
   };
+
 
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete your account?")) {
@@ -103,47 +111,77 @@ function Profile() {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 4 }}>
-      <Typography variant="h5" gutterBottom>
-        My Profile
-      </Typography>
+    <Container maxWidth="sm" sx={{ mt: 5 }}>
+      <Paper elevation={4} sx={{ p: 4, borderRadius: 4 }}>
+        <Typography variant="h5" fontWeight="bold" gutterBottom>
+          My Profile
+        </Typography>
 
-      <Stack spacing={2} alignItems="center">
-        <Avatar
-          src={`http://localhost:8080${form.profilePic}`}
-          alt={form.username}
-          sx={{ width: 100, height: 100 }}
-        />
-        <input type="file" accept="image/*" onChange={handleFileChange} />
-      </Stack>
+        <Divider sx={{ mb: 3 }} />
 
-      <Stack spacing={2} sx={{ mt: 2 }}>
-        <TextField
-          label="Username"
-          name="username"
-          value={form.username}
-          onChange={handleChange}
-        />
-        <TextField label="Email" name="email" value={form.email} disabled />
-        <TextField
-          label="Bio"
-          name="bio"
-          value={form.bio}
-          onChange={handleChange}
-        />
-        <TextField
-          label="Location"
-          name="location"
-          value={form.location}
-          onChange={handleChange}
-        />
-        <Button variant="contained" onClick={handleUpdate}>
-          Update Profile
-        </Button>
-        <Button color="error" onClick={handleDelete}>
-          Delete Account
-        </Button>
-      </Stack>
+        <Stack spacing={3} alignItems="center">
+          <Avatar
+            src={`http://localhost:8080${form.profilePic}`}
+            alt={form.username}
+            sx={{
+              width: 100,
+              height: 100,
+              border: `2px solid ${theme.palette.primary.main}`,
+            }}
+          />
+          <Button variant="outlined" component="label">
+            Upload Profile Picture
+            <input
+              hidden
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+            />
+          </Button>
+        </Stack>
+
+        <Stack spacing={2} sx={{ mt: 4 }}>
+          <TextField
+            label="Username"
+            name="username"
+            value={form.username}
+            onChange={handleChange}
+            fullWidth
+          />
+          <TextField
+            label="Email"
+            name="email"
+            value={form.email}
+            disabled
+            fullWidth
+          />
+          <TextField
+            label="Bio"
+            name="bio"
+            value={form.bio}
+            onChange={handleChange}
+            fullWidth
+            multiline
+            minRows={2}
+          />
+          <TextField
+            label="Location"
+            name="location"
+            value={form.location}
+            onChange={handleChange}
+            fullWidth
+          />
+        </Stack>
+
+        <Stack direction="row" spacing={2} mt={4} justifyContent="center">
+          <Button variant="contained" onClick={handleUpdate}>
+            Update Profile
+          </Button>
+          <Button variant="outlined" color="error" onClick={handleDelete}>
+            Delete Account
+          </Button>
+        </Stack>
+      </Paper>
 
       <Snackbar
         open={toast.open}
@@ -151,7 +189,9 @@ function Profile() {
         onClose={() => setToast({ ...toast, open: false })}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <Alert severity={toast.severity}>{toast.message}</Alert>
+        <Alert severity={toast.severity} variant="filled">
+          {toast.message}
+        </Alert>
       </Snackbar>
     </Container>
   );

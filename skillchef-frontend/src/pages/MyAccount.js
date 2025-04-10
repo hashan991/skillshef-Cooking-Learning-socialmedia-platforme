@@ -7,6 +7,12 @@ import {
   Button,
   Box,
   CircularProgress,
+  Divider,
+  Paper,
+  Tabs,
+  Tab,
+  Grid,
+  useTheme,
 } from "@mui/material";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
@@ -24,6 +30,7 @@ function MyAccount() {
   const [selectedView, setSelectedView] = useState("POSTS");
 
   const navigate = useNavigate();
+  const theme = useTheme();
   const isOwnProfile = !id || id === user?.id;
 
   useEffect(() => {
@@ -56,7 +63,9 @@ function MyAccount() {
     }
   }, [id, user]);
 
-  const isFollowing = profile?.followers?.includes(user?.id);
+  const isFollowing = profile?.followers?.some(
+    (followerId) => followerId === user?.id
+  );
 
   const handleFollowToggle = async () => {
     if (!user || !profile) return;
@@ -79,64 +88,90 @@ function MyAccount() {
 
   if (!profile) {
     return (
-      <Container sx={{ mt: 4 }}>
+      <Container sx={{ mt: 4, textAlign: "center" }}>
         <CircularProgress />
       </Container>
     );
   }
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 4 }}>
-      <Stack alignItems="center" spacing={2}>
-        <Avatar
-          src={`http://localhost:8080${profile.profilePic}`}
-          sx={{ width: 100, height: 100 }}
-        />
-        <Typography variant="h5">{profile.username}</Typography>
-        <Typography variant="body1" color="text.secondary">
-          {profile.email}
-        </Typography>
-        <Typography>{profile.bio}</Typography>
-        <Typography color="text.secondary">{profile.location}</Typography>
+    <Container maxWidth="md" sx={{ mt: 4 }}>
+      <Paper
+        elevation={4}
+        sx={{
+          p: 5,
+          borderRadius: 5,
+          background: theme.palette.background.paper,
+        }}
+      >
+        <Grid container spacing={4} alignItems="center">
+          <Grid item xs={12} sm={4} textAlign="center">
+            <Avatar
+              src={`http://localhost:8080${profile.profilePic}`}
+              sx={{
+                width: 120,
+                height: 120,
+                border: `3px solid ${theme.palette.primary.main}`,
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={8}>
+            <Typography variant="h4" fontWeight="bold">
+              {profile.username}
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              {profile.email}
+            </Typography>
+            {profile.bio && (
+              <Typography variant="body2" mt={1}>
+                {profile.bio}
+              </Typography>
+            )}
+            {profile.location && (
+              <Typography variant="body2" color="text.secondary" mt={1}>
+                📍 {profile.location}
+              </Typography>
+            )}
 
-        <Stack direction="row" spacing={4} justifyContent="center">
-          <Typography
-            sx={{ cursor: "pointer" }}
-            onClick={() => setShowFollowers(true)}
-          >
-            <strong>{profile.followers?.length || 0}</strong> followers
-          </Typography>
-          <Typography
-            sx={{ cursor: "pointer" }}
-            onClick={() => setShowFollowing(true)}
-          >
-            <strong>{profile.following?.length || 0}</strong> following
-          </Typography>
-        </Stack>
+            <Stack direction="row" spacing={4} mt={2}>
+              <Typography
+                sx={{ cursor: "pointer" }}
+                onClick={() => setShowFollowers(true)}
+              >
+                <strong>{profile.followers?.length || 0}</strong> Followers
+              </Typography>
+              <Typography
+                sx={{ cursor: "pointer" }}
+                onClick={() => setShowFollowing(true)}
+              >
+                <strong>{profile.following?.length || 0}</strong> Following
+              </Typography>
+            </Stack>
 
-        {!isOwnProfile && (
-          <Box mt={2}>
-            <Button
-              variant="contained"
-              color={isFollowing ? "error" : "primary"}
-              onClick={handleFollowToggle}
-              disabled={loading}
-            >
-              {isFollowing ? "Unfollow" : "Follow"}
-            </Button>
-          </Box>
-        )}
+            {!isOwnProfile && (
+              <Box mt={2}>
+                <Button
+                  variant="contained"
+                  color={isFollowing ? "error" : "primary"}
+                  onClick={handleFollowToggle}
+                  disabled={loading}
+                >
+                  {isFollowing ? "Unfollow" : "Follow"}
+                </Button>
+              </Box>
+            )}
 
-        {isOwnProfile && (
-          <Box mt={2}>
-            <Button variant="outlined" onClick={() => navigate("/profile")}>
-              Manage My Account
-            </Button>
-          </Box>
-        )}
-      </Stack>
+            {isOwnProfile && (
+              <Box mt={2}>
+                <Button variant="outlined" onClick={() => navigate("/profile")}>
+                  Manage My Account
+                </Button>
+              </Box>
+            )}
+          </Grid>
+        </Grid>
+      </Paper>
 
-      {/* Followers/Following Modal */}
       <FollowersModal
         open={showFollowers}
         onClose={() => setShowFollowers(false)}
@@ -150,74 +185,50 @@ function MyAccount() {
         title="Following"
       />
 
-      {/* Toggle buttons for views */}
-      <Box mt={5}>
-        <Stack direction="row" spacing={2} justifyContent="center" mb={2}>
-          <Button
-            variant={selectedView === "POSTS" ? "contained" : "outlined"}
-            onClick={() => setSelectedView("POSTS")}
-          >
-            Posts
-          </Button>
-          <Button
-            variant={selectedView === "PROGRESS" ? "contained" : "outlined"}
-            onClick={() => setSelectedView("PROGRESS")}
-          >
-            Learning Progress Updates
-          </Button>
-          <Button
-            variant={selectedView === "PLAN" ? "contained" : "outlined"}
-            onClick={() => setSelectedView("PLAN")}
-          >
-            Learning Plan Sharing
-          </Button>
-        </Stack>
+      <Paper elevation={3} sx={{ mt: 5, p: 3, borderRadius: 4 }}>
+        <Tabs
+          value={selectedView}
+          onChange={(e, newVal) => setSelectedView(newVal)}
+          centered
+          textColor="primary"
+          indicatorColor="primary"
+        >
+          <Tab value="POSTS" label="Posts" />
+          <Tab value="PROGRESS" label="Learning Progress" />
+          <Tab value="PLAN" label="Learning Plan Sharing" />
+        </Tabs>
 
-        <Typography variant="h6" gutterBottom>
-          {selectedView === "POSTS"
-            ? "Posts"
-            : selectedView === "PROGRESS"
-            ? "Learning Progress"
-            : "Learning Plan Sharing"}
-        </Typography>
+        <Divider sx={{ mt: 2, mb: 3 }} />
 
-        {/* ✅ Show post thumbnails only if POSTS is selected */}
         {selectedView === "POSTS" && (
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
-              gap: 2,
-            }}
-          >
+          <Grid container spacing={2}>
             {posts.length > 0 ? (
-              posts
-                .filter((post) => {
-                  return true; // Can add filtering by post.category if needed
-                })
-                .map((post) =>
-                  post.mediaUrls?.[0] ? (
+              posts.map((post) =>
+                post.mediaUrls?.[0] ? (
+                  <Grid item xs={4} key={post.id}>
                     <img
-                      key={post.id}
                       src={`http://localhost:8080${post.mediaUrls[0]}`}
                       alt={post.title}
                       style={{
                         width: "100%",
                         height: "120px",
                         objectFit: "cover",
-                        borderRadius: 8,
+                        borderRadius: "12px",
                         cursor: "pointer",
                       }}
                       onClick={() => navigate(`/post/${post.id}`)}
                     />
-                  ) : null
-                )
+                  </Grid>
+                ) : null
+              )
             ) : (
-              <Typography color="text.secondary">No posts to show.</Typography>
+              <Typography color="text.secondary" align="center" width="100%">
+                No posts to show.
+              </Typography>
             )}
-          </Box>
+          </Grid>
         )}
-      </Box>
+      </Paper>
     </Container>
   );
 }

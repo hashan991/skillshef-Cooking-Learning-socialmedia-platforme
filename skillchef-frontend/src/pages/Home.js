@@ -22,7 +22,11 @@ function Home() {
 
   useEffect(() => {
     axios.get("http://localhost:8080/api/posts").then((res) => {
-      setPosts(res.data);
+      // Sort posts newest first
+      const sorted = res.data.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+      setPosts(sorted);
     });
 
     if (user?.id) {
@@ -42,7 +46,6 @@ function Home() {
       await axios.put(
         `http://localhost:8080/api/users/${user.id}/follow/${targetId}`
       );
-      // Remove followed user from suggestions
       setSuggestedUsers((prev) => prev.filter((u) => u.id !== targetId));
     } catch (err) {
       console.error("Follow failed", err);
@@ -50,7 +53,7 @@ function Home() {
   };
 
   return (
-    <Container sx={{ mt: 4, ml:30}}>
+    <Container sx={{ mt: 4, ml: 30 }}>
       <Grid container spacing={3}>
         {/* Left Side - Posts */}
         <Grid item xs={12} md={8}>
@@ -62,10 +65,20 @@ function Home() {
           ))}
         </Grid>
 
-        {/* Right Side - Suggested Users */}
-        <Grid item xs={12} md={4}  >
-          <Paper elevation={3} sx={{ p: 2}}>
-            <Typography variant="h6" gutterBottom>
+        {/* Right Side - Suggested Users (Sticky) */}
+        <Grid item xs={12} md={4}>
+          <Paper
+            elevation={3}
+            sx={{
+              p: 2,
+              position: "sticky",
+              top: 90,
+              maxHeight: "calc(100vh - 100px)",
+              overflow: "auto",
+              ml:11
+            }}
+          >
+            <Typography variant="h6" gutterBottom >
               Suggested Followers
             </Typography>
             <Stack spacing={2}>
@@ -80,7 +93,7 @@ function Home() {
                     display="flex"
                     alignItems="center"
                     gap={1}
-                    sx={{ cursor: "pointer" }}
+                    sx={{ cursor: "pointer", mr:3}}
                     onClick={() => navigate(`/account/${u.id}`)}
                   >
                     <Avatar src={`http://localhost:8080${u.profilePic}`} />
