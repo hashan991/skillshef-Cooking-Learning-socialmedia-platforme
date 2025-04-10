@@ -1,4 +1,4 @@
-package com.skillchef.skillchef_backend.dto;
+package com.skillchef.skillchef_backend.dto.hashan;
 
 public class UserRegisterDTO {
 

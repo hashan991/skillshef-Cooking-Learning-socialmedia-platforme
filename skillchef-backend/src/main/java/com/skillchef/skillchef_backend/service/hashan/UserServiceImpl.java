@@ -1,7 +1,8 @@
-package com.skillchef.skillchef_backend.service;
+package com.skillchef.skillchef_backend.service.hashan;
 
-import com.skillchef.skillchef_backend.model.User;
-import com.skillchef.skillchef_backend.repository.UserRepository;
+import com.skillchef.skillchef_backend.model.hashan.User;
+import com.skillchef.skillchef_backend.repository.hashan.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;

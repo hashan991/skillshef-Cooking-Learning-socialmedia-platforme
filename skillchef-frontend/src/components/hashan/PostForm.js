@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { AuthContext } from "../context/AuthContext"; // ✅ Import context
+import { AuthContext } from "../../context/AuthContext";
 import {
   Box,
   Button,
@@ -7,13 +7,16 @@ import {
   Typography,
   Container,
   Stack,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function PostForm() {
-  const { user } = useContext(AuthContext); // ✅ Get user from context
-   const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -23,18 +26,61 @@ function PostForm() {
   });
 
   const [files, setFiles] = useState([]);
+  const [errors, setErrors] = useState({});
+  const [toast, setToast] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "" }); // Clear error on change
   };
 
   const handleFileChange = (e) => {
-    setFiles(Array.from(e.target.files));
+    const selectedFiles = Array.from(e.target.files);
+    if (selectedFiles.length > 3) {
+      setToast({
+        open: true,
+        message: "You can upload a maximum of 3 images.",
+        severity: "error",
+      });
+      return;
+    }
+
+    const validImages = selectedFiles.filter((file) =>
+      file.type.startsWith("image/")
+    );
+
+    if (validImages.length !== selectedFiles.length) {
+      setToast({
+        open: true,
+        message: "Only image files are allowed.",
+        severity: "error",
+      });
+      return;
+    }
+
+    setFiles(validImages);
   };
 
- 
+  const validateForm = () => {
+    const newErrors = {};
+    if (!form.title.trim()) newErrors.title = "Title is required";
+    if (!form.description.trim())
+      newErrors.description = "Description is required";
+    if (form.hashtags && !/^#[a-zA-Z0-9_, ]*$/.test(form.hashtags)) {
+      newErrors.hashtags = "Hashtags must be comma-separated and start with #";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
 
     const formData = new FormData();
     formData.append("title", form.title);
@@ -42,7 +88,7 @@ function PostForm() {
     formData.append("category", form.category);
     formData.append("difficulty", form.difficulty);
     formData.append("hashtags", form.hashtags);
-    formData.append("userId", user?.id); // ✅ Dynamically set userId
+    formData.append("userId", user?.id);
 
     files.forEach((file) => {
       formData.append("files", file);
@@ -54,22 +100,30 @@ function PostForm() {
           "Content-Type": "multipart/form-data",
         },
       });
-      alert("Post created successfully!");
 
-      // Reset form
+      setToast({
+        open: true,
+        message: "Post created successfully!",
+        severity: "success",
+      });
+
       setForm({
         title: "",
         description: "",
         category: "",
         difficulty: "",
         hashtags: "",
-        userId: "user123",
       });
       setFiles([]);
-       navigate("/home");
+
+      setTimeout(() => navigate("/home"), 1000);
     } catch (err) {
       console.error(err);
-      alert("Error creating post.");
+      setToast({
+        open: true,
+        message: "Error creating post",
+        severity: "error",
+      });
     }
   };
 
@@ -97,6 +151,8 @@ function PostForm() {
           name="title"
           value={form.title}
           onChange={handleChange}
+          error={!!errors.title}
+          helperText={errors.title}
           required
         />
         <TextField
@@ -106,6 +162,8 @@ function PostForm() {
           rows={4}
           value={form.description}
           onChange={handleChange}
+          error={!!errors.description}
+          helperText={errors.description}
           required
         />
         <TextField
@@ -113,6 +171,8 @@ function PostForm() {
           name="hashtags"
           value={form.hashtags}
           onChange={handleChange}
+          error={!!errors.hashtags}
+          helperText={errors.hashtags || "Example: #spicy, #seafood"}
         />
 
         <Stack direction="row" spacing={2}>
@@ -143,7 +203,7 @@ function PostForm() {
 
         {files.length > 0 && (
           <Typography variant="body2" color="text.secondary">
-            {files.length} file(s) selected
+            {files.length} image(s) selected
           </Typography>
         )}
 
@@ -151,6 +211,21 @@ function PostForm() {
           Submit Post
         </Button>
       </Box>
+
+      <Snackbar
+        open={toast.open}
+        autoHideDuration={3000}
+        onClose={() => setToast({ ...toast, open: false })}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          severity={toast.severity}
+          onClose={() => setToast({ ...toast, open: false })}
+          variant="filled"
+        >
+          {toast.message}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }

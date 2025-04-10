@@ -59,56 +59,63 @@ function Profile() {
     setFile(e.target.files[0]);
   };
 
-  const handleUpdate = async () => {
-    try {
-      const formData = new FormData();
-      formData.append("username", form.username);
-      formData.append("bio", form.bio);
-      formData.append("location", form.location);
-      if (file) formData.append("file", file);
+ const handleUpdate = async () => {
+   const confirmUpdate = window.confirm(
+     "Are you sure you want to update your profile?"
+   );
+   if (!confirmUpdate) return;
 
-      const res = await axios.put(
-        `http://localhost:8080/api/users/${user.id}`,
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+   try {
+     const formData = new FormData();
+     formData.append("username", form.username);
+     formData.append("bio", form.bio);
+     formData.append("location", form.location);
+     if (file) formData.append("file", file);
 
-      const updated = res.data;
-      setForm({
-        username: updated.username || "",
-        email: updated.email || "",
-        bio: updated.bio || "",
-        location: updated.location || "",
-        profilePic: updated.profilePic || "",
-      });
+     const res = await axios.put(
+       `http://localhost:8080/api/users/${user.id}`,
+       formData,
+       {
+         headers: { "Content-Type": "multipart/form-data" },
+       }
+     );
 
-      setToast({
-        open: true,
-        message: "Profile updated!",
-        severity: "success",
-      });
+     const updated = res.data;
+     setForm({
+       username: updated.username || "",
+       email: updated.email || "",
+       bio: updated.bio || "",
+       location: updated.location || "",
+       profilePic: updated.profilePic || "",
+     });
 
-      // Navigate to /account/:id after update
-      navigate(`/account/${user.id}`);
-    } catch (err) {
-      setToast({ open: true, message: "Update failed", severity: "error" });
-    }
-  };
+     setToast({
+       open: true,
+       message: "Profile updated!",
+       severity: "success",
+     });
 
+     navigate(`/account/${user.id}`);
+   } catch (err) {
+     setToast({ open: true, message: "Update failed", severity: "error" });
+   }
+ };
 
-  const handleDelete = async () => {
-    if (window.confirm("Are you sure you want to delete your account?")) {
-      try {
-        await axios.delete(`http://localhost:8080/api/users/${user.id}`);
-        logout();
-        navigate("/");
-      } catch (err) {
-        setToast({ open: true, message: "Delete failed", severity: "error" });
-      }
-    }
-  };
+ const handleDelete = async () => {
+   const confirmDelete = window.confirm(
+     "Are you sure you want to delete your account? This cannot be undone."
+   );
+   if (!confirmDelete) return;
+
+   try {
+     await axios.delete(`http://localhost:8080/api/users/${user.id}`);
+     logout();
+     navigate("/");
+   } catch (err) {
+     setToast({ open: true, message: "Delete failed", severity: "error" });
+   }
+ };
+
 
   return (
     <Container maxWidth="sm" sx={{ mt: 5 }}>

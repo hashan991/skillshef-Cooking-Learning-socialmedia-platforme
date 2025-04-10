@@ -1,10 +1,11 @@
-package com.skillchef.skillchef_backend.controller;
+package com.skillchef.skillchef_backend.controller.hashan;
 
-import com.skillchef.skillchef_backend.dto.UserLoginDTO;
-import com.skillchef.skillchef_backend.dto.UserRegisterDTO;
-import com.skillchef.skillchef_backend.dto.UserResponseDTO;
-import com.skillchef.skillchef_backend.model.User;
-import com.skillchef.skillchef_backend.service.UserService;
+import com.skillchef.skillchef_backend.dto.hashan.UserLoginDTO;
+import com.skillchef.skillchef_backend.dto.hashan.UserRegisterDTO;
+import com.skillchef.skillchef_backend.dto.hashan.UserResponseDTO;
+import com.skillchef.skillchef_backend.model.hashan.User;
+import com.skillchef.skillchef_backend.service.hashan.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

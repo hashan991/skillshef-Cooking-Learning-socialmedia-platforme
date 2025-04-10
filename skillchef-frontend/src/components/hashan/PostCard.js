@@ -24,7 +24,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ShareIcon from "@mui/icons-material/Share";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 
 function PostCard({ post, onDelete }) {
   const navigate = useNavigate();
@@ -52,7 +52,7 @@ function PostCard({ post, onDelete }) {
       await axios.delete(`http://localhost:8080/api/posts/${post.id}`);
       onDelete(post.id);
       setToastOpen(true);
-        navigate("/home");
+      navigate("/home");
     } catch (err) {
       console.error("Delete failed:", err.response?.data || err.message);
     } finally {

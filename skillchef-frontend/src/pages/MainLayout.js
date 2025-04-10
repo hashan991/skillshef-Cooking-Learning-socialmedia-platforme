@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Outlet } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
-import Navbar from "../components/Navbar";
+import Sidebar from "../components/hashan/Sidebar";
+import Navbar from "../components/hashan/Navbar";
 import { Box } from "@mui/material";
 import { AuthContext } from "../context/AuthContext";
 

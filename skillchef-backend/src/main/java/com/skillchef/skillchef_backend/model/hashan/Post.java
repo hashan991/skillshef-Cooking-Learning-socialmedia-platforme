@@ -1,4 +1,4 @@
-package com.skillchef.skillchef_backend.model;
+package com.skillchef.skillchef_backend.model.hashan;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;

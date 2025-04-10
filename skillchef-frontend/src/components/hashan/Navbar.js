@@ -14,7 +14,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 
 function Navbar() {
   const { user, logout } = useContext(AuthContext);

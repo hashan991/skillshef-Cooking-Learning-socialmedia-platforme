@@ -1,8 +1,8 @@
-package com.skillchef.skillchef_backend.service;
+package com.skillchef.skillchef_backend.service.hashan;
 
-import com.skillchef.skillchef_backend.dto.PostRequestDTO;
-import com.skillchef.skillchef_backend.dto.PostResponseDTO;
-import com.skillchef.skillchef_backend.model.Post;
+import com.skillchef.skillchef_backend.dto.hashan.PostRequestDTO;
+import com.skillchef.skillchef_backend.dto.hashan.PostResponseDTO;
+import com.skillchef.skillchef_backend.model.hashan.Post;
 
 import java.util.List;
 import java.util.Optional;

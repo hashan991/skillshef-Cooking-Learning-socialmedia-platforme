@@ -1,7 +1,8 @@
-package com.skillchef.skillchef_backend.repository;
+package com.skillchef.skillchef_backend.repository.hashan;
 
-import com.skillchef.skillchef_backend.model.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
+
+import com.skillchef.skillchef_backend.model.hashan.User;
 
 import java.util.Optional;
 

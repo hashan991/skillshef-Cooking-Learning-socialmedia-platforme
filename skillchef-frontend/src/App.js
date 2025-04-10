@@ -2,8 +2,8 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Home from "./pages/Home";
-import PostForm from "./components/PostForm";
-import EditPost from "./components/EditPost";
+import PostForm from "./components/hashan/PostForm";
+import EditPost from "./components/hashan/EditPost";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Startup from "./pages/Startup";
@@ -12,11 +12,7 @@ import MyAccount from "./pages/MyAccount";
 import PostDetail from "./pages/PostDetail";
 import MainLayout from "./pages/MainLayout";
 
-
-
 function App() {
-
-
   return (
     <Router>
       <Routes>

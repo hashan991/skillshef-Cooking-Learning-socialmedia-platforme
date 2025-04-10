@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
-import PostCard from "../components/PostCard";
+import PostCard from "../components/hashan/PostCard";
 import {
   Container,
   Typography,
@@ -75,10 +75,10 @@ function Home() {
               top: 90,
               maxHeight: "calc(100vh - 100px)",
               overflow: "auto",
-              ml:11
+              ml: 11,
             }}
           >
-            <Typography variant="h6" gutterBottom >
+            <Typography variant="h6" gutterBottom>
               Suggested Followers
             </Typography>
             <Stack spacing={2}>
@@ -93,7 +93,7 @@ function Home() {
                     display="flex"
                     alignItems="center"
                     gap={1}
-                    sx={{ cursor: "pointer", mr:3}}
+                    sx={{ cursor: "pointer", mr: 3 }}
                     onClick={() => navigate(`/account/${u.id}`)}
                   >
                     <Avatar src={`http://localhost:8080${u.profilePic}`} />

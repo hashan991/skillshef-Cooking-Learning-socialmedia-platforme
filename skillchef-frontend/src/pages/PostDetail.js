@@ -1,7 +1,7 @@
 // src/pages/PostDetail.js
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import PostCard from "../components/PostCard";
+import PostCard from "../components/hashan/PostCard";
 import { Container, CircularProgress } from "@mui/material";
 import axios from "axios";
 
@@ -26,7 +26,7 @@ function PostDetail() {
 
   return (
     <Container maxWidth="md" sx={{ mt: 4 }}>
-      <PostCard post={post} onDelete={() => (window.location.href = "/")} />
+      <PostCard post={post} onDelete={() => (window.location.href = "/home")} />
     </Container>
   );
 }

@@ -52,15 +52,20 @@ function EditPost() {
     e.preventDefault();
     if (!post) return;
 
+    // 🚨 Confirmation dialog
+    const confirmUpdate = window.confirm(
+      "Are you sure you want to update this post?"
+    );
+    if (!confirmUpdate) return;
+
     const formData = new FormData();
     formData.append("title", form.title);
     formData.append("description", form.description);
     formData.append("category", form.category);
     formData.append("difficulty", form.difficulty);
-    formData.append("userId", post.userId); // 👈 preserve
-    formData.append("hashtags", form.hashtags); // comma-separated
+    formData.append("userId", post.userId);
+    formData.append("hashtags", form.hashtags);
 
-    // 👇 Append files if any
     files.forEach((file) => {
       formData.append("files", file);
     });
@@ -77,7 +82,7 @@ function EditPost() {
       );
 
       setToastOpen(true);
-      setTimeout(() => navigate("/home"), 1000); // redirect after toast
+      setTimeout(() => navigate("/home"), 1000);
     } catch (err) {
       console.error("Update failed:", err);
     }

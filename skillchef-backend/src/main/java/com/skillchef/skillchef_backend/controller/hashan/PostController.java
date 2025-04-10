@@ -1,9 +1,10 @@
-package com.skillchef.skillchef_backend.controller;
+package com.skillchef.skillchef_backend.controller.hashan;
 
-import com.skillchef.skillchef_backend.dto.PostRequestDTO;
-import com.skillchef.skillchef_backend.dto.PostResponseDTO;
-import com.skillchef.skillchef_backend.model.Post;
-import com.skillchef.skillchef_backend.service.PostService;
+import com.skillchef.skillchef_backend.dto.hashan.PostRequestDTO;
+import com.skillchef.skillchef_backend.dto.hashan.PostResponseDTO;
+import com.skillchef.skillchef_backend.model.hashan.Post;
+import com.skillchef.skillchef_backend.service.hashan.PostService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;

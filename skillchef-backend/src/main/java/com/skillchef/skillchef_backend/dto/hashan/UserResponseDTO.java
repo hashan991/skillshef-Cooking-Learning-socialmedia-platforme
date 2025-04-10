@@ -1,8 +1,8 @@
-package com.skillchef.skillchef_backend.dto;
-
-import com.skillchef.skillchef_backend.model.User;
+package com.skillchef.skillchef_backend.dto.hashan;
 
 import java.util.Set;
+
+import com.skillchef.skillchef_backend.model.hashan.User;
 
 public class UserResponseDTO {
     private String id;

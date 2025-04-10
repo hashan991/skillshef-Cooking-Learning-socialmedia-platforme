@@ -1,9 +1,9 @@
-package com.skillchef.skillchef_backend.service;
-
-import com.skillchef.skillchef_backend.model.User;
+package com.skillchef.skillchef_backend.service.hashan;
 
 import java.util.List;
 import java.util.Optional;
+
+import com.skillchef.skillchef_backend.model.hashan.User;
 
 public interface UserService {
     User register(User user);

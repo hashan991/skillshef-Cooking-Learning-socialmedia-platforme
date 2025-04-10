@@ -1,4 +1,4 @@
-package com.skillchef.skillchef_backend.model;
+package com.skillchef.skillchef_backend.model.hashan;
 
 import java.util.Set;
 import java.util.HashSet;
