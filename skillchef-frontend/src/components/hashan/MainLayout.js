@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
 import { Outlet } from "react-router-dom";
-import Sidebar from "../components/hashan/Sidebar";
-import Navbar from "../components/hashan/Navbar";
+import Sidebar from "./Sidebar";
+import Navbar from "./Navbar";
 import { Box } from "@mui/material";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 
 function MainLayout() {
   const { user } = useContext(AuthContext);

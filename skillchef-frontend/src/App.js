@@ -10,7 +10,7 @@ import Startup from "./pages/Startup";
 import Profile from "./pages/Profile";
 import MyAccount from "./pages/MyAccount";
 import PostDetail from "./pages/PostDetail";
-import MainLayout from "./pages/MainLayout";
+import MainLayout from "./components/hashan/MainLayout";
 
 function App() {
   return (
