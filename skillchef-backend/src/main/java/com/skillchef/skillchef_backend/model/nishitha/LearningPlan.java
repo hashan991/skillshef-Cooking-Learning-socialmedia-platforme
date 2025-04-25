@@ -3,6 +3,7 @@ package com.skillchef.skillchef_backend.model.nishitha;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Document(collection = "learningPlans")
@@ -13,6 +14,12 @@ public class LearningPlan {
     private String title;
     private String description;
     private String userId;
+
+    private String category;           // ✅ New
+    private Integer durationInDays;    // ✅ New
+    private String goal;               // ✅ New
+    private LocalDateTime startDateTime; // ✅ New
+
     private List<Step> steps;
 
     public static class Step {
@@ -45,6 +52,8 @@ public class LearningPlan {
 
     public LearningPlan() {}
 
+    // --- Getters and Setters ---
+
     public String getId() {
         return id;
     }
@@ -75,6 +84,38 @@ public class LearningPlan {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public Integer getDurationInDays() {
+        return durationInDays;
+    }
+
+    public void setDurationInDays(Integer durationInDays) {
+        this.durationInDays = durationInDays;
+    }
+
+    public String getGoal() {
+        return goal;
+    }
+
+    public void setGoal(String goal) {
+        this.goal = goal;
+    }
+
+    public LocalDateTime getStartDateTime() {
+        return startDateTime;
+    }
+
+    public void setStartDateTime(LocalDateTime startDateTime) {
+        this.startDateTime = startDateTime;
     }
 
     public List<Step> getSteps() {

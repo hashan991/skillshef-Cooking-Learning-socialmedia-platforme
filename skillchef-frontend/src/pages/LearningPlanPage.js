@@ -167,7 +167,30 @@ const LearningPlanPage = () => {
                   {plan.description}
                 </Typography>
 
-                <Divider sx={{ mb: 1 }} />
+                {/* ✨ NEW: show additional fields */}
+                {plan.category && (
+                  <Typography variant="body2" color="text.secondary">
+                    📂 Category: {plan.category}
+                  </Typography>
+                )}
+                {plan.goal && (
+                  <Typography variant="body2" color="text.secondary">
+                    🎯 Goal: {plan.goal}
+                  </Typography>
+                )}
+                {plan.durationInDays && (
+                  <Typography variant="body2" color="text.secondary">
+                    🕒 Duration: {plan.durationInDays} days
+                  </Typography>
+                )}
+                {plan.startDateTime && (
+                  <Typography variant="body2" color="text.secondary">
+                    📅 Start Date:{" "}
+                    {new Date(plan.startDateTime).toLocaleString()}
+                  </Typography>
+                )}
+
+                <Divider sx={{ my: 2 }} />
                 <Typography variant="subtitle2" gutterBottom>
                   Steps:
                 </Typography>
@@ -188,6 +211,7 @@ const LearningPlanPage = () => {
                   ))}
                 </List>
               </CardContent>
+
               <CardActions sx={{ justifyContent: "flex-end", px: 2 }}>
                 <Button
                   variant="outlined"

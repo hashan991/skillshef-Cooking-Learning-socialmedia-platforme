@@ -36,10 +36,40 @@ const UserLearningPlans = ({ userId }) => {
     <Stack spacing={2}>
       {plans.map((plan) => (
         <Paper key={plan.id} sx={{ p: 2 }}>
-          <Typography variant="h6">{plan.title}</Typography>
-          <Typography>{plan.description}</Typography>
+          <Typography variant="h6" fontWeight="bold">
+            {plan.title}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            {plan.description}
+          </Typography>
+
+          {/* ✨ Show additional fields */}
+          {plan.category && (
+            <Typography variant="body2" color="text.secondary">
+              📂 Category: {plan.category}
+            </Typography>
+          )}
+          {plan.goal && (
+            <Typography variant="body2" color="text.secondary">
+              🎯 Goal: {plan.goal}
+            </Typography>
+          )}
+          {plan.durationInDays && (
+            <Typography variant="body2" color="text.secondary">
+              🕒 Duration: {plan.durationInDays} days
+            </Typography>
+          )}
+          {plan.startDateTime && (
+            <Typography variant="body2" color="text.secondary">
+              📅 Start: {new Date(plan.startDateTime).toLocaleString()}
+            </Typography>
+          )}
+
           <Divider sx={{ my: 1 }} />
-          <Typography variant="subtitle2">Steps:</Typography>
+
+          <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
+            Steps:
+          </Typography>
           <List dense>
             {plan.steps.map((step, i) => (
               <ListItem key={i}>

@@ -34,6 +34,10 @@ public class LearningPlanServiceImpl implements LearningPlanService {
         return learningPlanRepository.findById(id).map(existingPlan -> {
             existingPlan.setTitle(updatedPlan.getTitle());
             existingPlan.setDescription(updatedPlan.getDescription());
+            existingPlan.setCategory(updatedPlan.getCategory());
+            existingPlan.setDurationInDays(updatedPlan.getDurationInDays());
+            existingPlan.setGoal(updatedPlan.getGoal());
+            existingPlan.setStartDateTime(updatedPlan.getStartDateTime());
             existingPlan.setSteps(updatedPlan.getSteps());
             return learningPlanRepository.save(existingPlan);
         }).orElse(null);
