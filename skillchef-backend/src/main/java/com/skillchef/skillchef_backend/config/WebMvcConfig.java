@@ -12,4 +12,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
             .addResourceHandler("/uploads/**")
             .addResourceLocations("file:" + System.getProperty("user.dir") + "/skillchef-backend/uploads/");
     }
+
+      // 🔐 Enable CORS for React Frontend
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**") // Allow all endpoints
+                .allowedOrigins("http://localhost:3000") // Allow your React frontend
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*");
+    }
 }

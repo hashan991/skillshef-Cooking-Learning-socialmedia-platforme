@@ -41,7 +41,7 @@ function Sidebar() {
     },
     { label: "Create", icon: <AddBox />, path: "/create" },
     { label: "Progress", icon: <TrendingUp />, path: "/progress" },
-    { label: "Planning", icon: <Assignment />, path: "/plan" },
+    { label: "Planning", icon: <Assignment />, path: "/learning-plans" },
     { label: "Profile", icon: <AccountCircle />, path: `/account/${user?.id}` },
   ];
 
