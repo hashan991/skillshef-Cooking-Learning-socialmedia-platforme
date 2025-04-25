@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   getAllPlans,
   createPlan,
@@ -6,6 +6,7 @@ import {
   updatePlan,
 } from "../services/learningPlanService";
 import LearningPlanForm from "../components/nishitha/LearningPlanForm";
+import { AuthContext } from "../context/AuthContext"; // ✅ Import AuthContext
 
 import {
   Snackbar,
@@ -24,6 +25,7 @@ import {
 } from "@mui/material";
 
 const LearningPlanPage = () => {
+  const { user } = useContext(AuthContext); // ✅ get logged-in user
   const [plans, setPlans] = useState([]);
   const [editingPlan, setEditingPlan] = useState(null);
   const [formResetTrigger, setFormResetTrigger] = useState(0);
@@ -45,15 +47,21 @@ const LearningPlanPage = () => {
   const loadPlans = async () => {
     try {
       const data = await getAllPlans();
-      setPlans(data);
+
+      // ✅ Only show plans that belong to this user
+      const userPlans = data.filter((plan) => plan.userId === user?.id);
+
+      setPlans(userPlans);
     } catch (err) {
       showToast("Failed to load plans", "error");
     }
   };
 
   useEffect(() => {
-    loadPlans();
-  }, []);
+    if (user) {
+      loadPlans();
+    }
+  }, [user]);
 
   const handleCreate = async (planData) => {
     try {
@@ -133,7 +141,7 @@ const LearningPlanPage = () => {
   return (
     <Container maxWidth="md" sx={{ py: 5 }}>
       <Typography variant="h4" textAlign="center" gutterBottom>
-        📚 Learning Plans
+        📚 My Learning Plans
       </Typography>
 
       <LearningPlanForm
@@ -144,7 +152,7 @@ const LearningPlanPage = () => {
       />
 
       <Typography variant="h5" mt={4} mb={2}>
-        All Plans
+        All My Plans
       </Typography>
 
       {plans.length === 0 ? (
@@ -201,7 +209,6 @@ const LearningPlanPage = () => {
         </Stack>
       )}
 
-      {/* ✅ Toast popup */}
       <Snackbar
         open={toast.open}
         autoHideDuration={3000}

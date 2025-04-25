@@ -18,6 +18,9 @@ import { AuthContext } from "../context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import FollowersModal from "../components/hashan/FollowersModal";
+import UserProgressList from "../components/tabs/UserProgressList";
+import UserLearningPlans from "../components/tabs/UserLearningPlans";
+
 
 function MyAccount() {
   const { user } = useContext(AuthContext);
@@ -227,6 +230,13 @@ function MyAccount() {
               </Typography>
             )}
           </Grid>
+        )}
+        {selectedView === "PROGRESS" && (
+          <UserProgressList userId={profile.id} />
+        )}
+
+        {selectedView === "PLAN" && (
+          <UserLearningPlans userId={profile.id} />
         )}
       </Paper>
     </Container>

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { AuthContext } from "../../context/AuthContext"; // ✅ Import AuthContext
 import {
   Box,
   Button,
@@ -17,11 +18,12 @@ const LearningPlanForm = ({
   onCancel,
   resetTrigger,
 }) => {
+  const { user } = useContext(AuthContext); // ✅ Get logged-in user
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [steps, setSteps] = useState([{ step: "", completed: false }]);
 
-  // Fill form if editing
   useEffect(() => {
     if (editingPlan) {
       setTitle(editingPlan.title);
@@ -30,7 +32,6 @@ const LearningPlanForm = ({
     }
   }, [editingPlan]);
 
-  // Reset form when resetTrigger changes
   useEffect(() => {
     if (!editingPlan) {
       setTitle("");
@@ -51,7 +52,12 @@ const LearningPlanForm = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const planData = { title, description, steps };
+    const planData = {
+      title,
+      description,
+      steps,
+      userId: user?.id, // ✅ Auto-attach logged-in user's ID
+    };
     onSubmit(planData);
   };
 

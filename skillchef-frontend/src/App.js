@@ -12,6 +12,7 @@ import MyAccount from "./pages/MyAccount";
 import PostDetail from "./pages/PostDetail";
 import MainLayout from "./components/hashan/MainLayout";
 import LearningPlanPage from "./pages/LearningPlanPage";
+import ProgressPage from "./pages/ProgressPage";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
           <Route path="/account/:id" element={<MyAccount />} />
           <Route path="/post/:id" element={<PostDetail />} />
           <Route path="/learning-plans" element={<LearningPlanPage />} />
+          <Route path="/progress" element={<ProgressPage />} />
         </Route>
       </Routes>
     </Router>
