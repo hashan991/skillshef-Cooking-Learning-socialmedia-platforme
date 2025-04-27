@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
+import CommentSection from "../nishan/CommentSection";
+
 import {
   Card,
   CardContent,
@@ -174,6 +176,14 @@ function PostCard({ post, onDelete }) {
             ))}
           </Box>
         </CardContent>
+        <Button
+          variant="text"
+          size="small"
+          onClick={() => navigate(`/post/${post.id}`)}
+          sx={{ mt: 2 }}
+        >
+          💬 View Comments
+        </Button>
       </Card>
 
       {/* Confirm Delete */}

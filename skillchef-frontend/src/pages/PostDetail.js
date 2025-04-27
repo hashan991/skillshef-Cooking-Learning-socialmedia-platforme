@@ -1,8 +1,8 @@
-// src/pages/PostDetail.js
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import PostCard from "../components/hashan/PostCard";
-import { Container, CircularProgress } from "@mui/material";
+import CommentSection from "../components/nishan/CommentSection"; // 👈 Add this
+import { Container, CircularProgress, Box } from "@mui/material";
 import axios from "axios";
 
 function PostDetail() {
@@ -27,6 +27,9 @@ function PostDetail() {
   return (
     <Container maxWidth="md" sx={{ mt: 4 }}>
       <PostCard post={post} onDelete={() => (window.location.href = "/home")} />
+      <Box sx={{ maxHeight: 400, overflowY: "auto", mt: 4 }}>
+        <CommentSection postId={post.id} showAllComments={true} />
+      </Box>
     </Container>
   );
 }
