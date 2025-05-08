@@ -16,7 +16,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import { AuthContext } from "../../context/AuthContext";
 import axios from "axios";
 
-function CommentSection({ postId, limit }) {
+function CommentSection({ postId, limit, postOwnerId }) {
   const { user } = useContext(AuthContext);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
@@ -44,7 +44,6 @@ function CommentSection({ postId, limit }) {
       const list = res.data._embedded?.commentList || [];
       const limitedList = limit ? list.slice(0, limit) : list;
 
-      // Fetch user info for each comment
       const enriched = await Promise.all(
         limitedList.map(async (comment) => {
           try {
@@ -141,9 +140,17 @@ function CommentSection({ postId, limit }) {
                 <Typography variant="subtitle2">
                   {comment.userInfo?.username || comment.username}
                 </Typography>
+                {comment.userId === postOwnerId && (
+                  <Typography
+                    variant="caption"
+                    color="primary"
+                    sx={{ ml: 1, fontWeight: "bold" }}
+                  >
+                    👑 Post Owner
+                  </Typography>
+                )}
               </Stack>
 
-              {/* 🆕 Add createdAt below username */}
               <Typography variant="caption" color="text.secondary">
                 {new Date(comment.createdAt).toLocaleString()}
               </Typography>
@@ -180,11 +187,15 @@ function CommentSection({ postId, limit }) {
                   <Typography variant="body2" mt={1}>
                     {comment.text}
                   </Typography>
-                  {comment.userId === user?.id && (
+
+                  {(comment.userId === user?.id ||
+                    user?.id === postOwnerId) && (
                     <Stack direction="row" spacing={1} mt={1}>
-                      <IconButton onClick={() => handleEdit(comment)}>
-                        <EditIcon fontSize="small" />
-                      </IconButton>
+                      {comment.userId === user?.id && (
+                        <IconButton onClick={() => handleEdit(comment)}>
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                      )}
                       <IconButton onClick={() => handleDelete(comment.id)}>
                         <DeleteIcon fontSize="small" color="error" />
                       </IconButton>

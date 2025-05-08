@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import PostCard from "../components/hashan/PostCard";
-import CommentSection from "../components/nishan/CommentSection"; // 👈 Add this
+import CommentSection from "../components/nishan/CommentSection";
 import { Container, CircularProgress, Box } from "@mui/material";
 import axios from "axios";
 
@@ -28,7 +28,7 @@ function PostDetail() {
     <Container maxWidth="md" sx={{ mt: 4 }}>
       <PostCard post={post} onDelete={() => (window.location.href = "/home")} />
       <Box sx={{ maxHeight: 400, overflowY: "auto", mt: 4 }}>
-        <CommentSection postId={post.id} showAllComments={true} />
+        <CommentSection postId={post.id} postOwnerId={post.userId} />
       </Box>
     </Container>
   );
