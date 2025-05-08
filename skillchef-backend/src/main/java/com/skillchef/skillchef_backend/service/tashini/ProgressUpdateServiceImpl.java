@@ -1,9 +1,10 @@
 package com.skillchef.skillchef_backend.service.tashini;
 
-
-
 import com.skillchef.skillchef_backend.model.tashini.ProgressUpdate;
 import com.skillchef.skillchef_backend.repository.tashini.ProgressUpdateRepository;
+import com.skillchef.skillchef_backend.service.hashan.NotificationService;
+import com.skillchef.skillchef_backend.service.hashan.UserService;
+import com.skillchef.skillchef_backend.model.hashan.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +16,37 @@ public class ProgressUpdateServiceImpl implements ProgressUpdateService {
     @Autowired
     private ProgressUpdateRepository repository;
 
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private UserService userService;
+
     @Override
     public ProgressUpdate createUpdate(ProgressUpdate update) {
-        return repository.save(update);
+        // Step 1: Save the update
+        ProgressUpdate saved = repository.save(update);
+
+        // Step 2: Get user info
+        User user = userService.getUserById(update.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        String username = user.getUsername();
+
+        // Step 3: Notify all followers
+        List<String> followers = userService.getFollowersOfUser(update.getUserId());
+
+        for (String followerId : followers) {
+            notificationService.createNotification(
+                followerId,
+                update.getUserId(),
+                username,
+                "PROGRESS_UPDATE",
+                username + " shared a new progress update.",
+                null
+            );
+        }
+
+        return saved;
     }
 
     @Override

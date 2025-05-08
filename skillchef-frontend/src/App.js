@@ -13,6 +13,7 @@ import PostDetail from "./pages/PostDetail";
 import MainLayout from "./components/hashan/MainLayout";
 import LearningPlanPage from "./pages/LearningPlanPage";
 import ProgressPage from "./pages/ProgressPage";
+import NotificationsPage from "./pages/NotificationsPage";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
           <Route path="/post/:id" element={<PostDetail />} />
           <Route path="/learning-plans" element={<LearningPlanPage />} />
           <Route path="/progress" element={<ProgressPage />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
         </Route>
       </Routes>
     </Router>

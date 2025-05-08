@@ -3,6 +3,7 @@ package com.skillchef.skillchef_backend.service.hashan;
 import com.skillchef.skillchef_backend.dto.hashan.PostRequestDTO;
 import com.skillchef.skillchef_backend.dto.hashan.PostResponseDTO;
 import com.skillchef.skillchef_backend.model.hashan.Post;
+import com.skillchef.skillchef_backend.model.hashan.User;
 import com.skillchef.skillchef_backend.repository.hashan.PostRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,15 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private PostRepository postRepository;
 
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private UserService userService;
+
     @Override
     public PostResponseDTO createPost(PostRequestDTO dto) {
+        // Step 1: Save the post
         Post post = new Post(
                 null,
                 dto.getTitle(),
@@ -32,7 +40,30 @@ public class PostServiceImpl implements PostService {
                 dto.getUserId(),
                 LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
         );
+
         Post savedPost = postRepository.save(post);
+        System.out.println("✅ Post saved: " + savedPost.getId());
+
+        // Step 2: Get sender info
+        User user = userService.getUserById(dto.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        String username = user.getUsername();
+          System.out.println("👤 Post created by: " + username);
+
+        // Step 3: Notify followers
+        List<String> followers = userService.getFollowersOfUser(dto.getUserId());
+         System.out.println("👥 Notifying " + followers.size() + " followers");
+        for (String followerId : followers) {
+            notificationService.createNotification(
+                    followerId,
+                    dto.getUserId(),
+                    username,
+                    "NEW_POST",
+                    username + " posted a new cooking post.",
+                    savedPost.getId()
+            );
+        }
+
         return mapToDTO(savedPost);
     }
 
@@ -100,7 +131,6 @@ public class PostServiceImpl implements PostService {
         dto.setUserId(post.getUserId());
         dto.setCreatedAt(post.getCreatedAt());
 
-        // ✅ Add HATEOAS links
         Map<String, String> links = new HashMap<>();
         links.put("self", "/api/posts/" + post.getId());
         links.put("update", "/api/posts/" + post.getId());

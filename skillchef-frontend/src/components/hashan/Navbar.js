@@ -1,3 +1,4 @@
+// src/components/Navbar.js
 import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -15,6 +16,7 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { AuthContext } from "../../context/AuthContext";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 
 function Navbar() {
   const { user, logout } = useContext(AuthContext);
@@ -31,7 +33,7 @@ function Navbar() {
     <AppBar
       variant="permanent"
       sx={{
-        bgcolor: "rgb(199, 195, 194)", // Bright orange
+        bgcolor: "rgb(199, 195, 194)",
         color: "#000",
         px: 0,
       }}
@@ -92,12 +94,14 @@ function Navbar() {
                   <Typography fontSize="12px" color="black">
                     {user.email}
                   </Typography>
+                  <Typography fontSize="12px" color="black">
+                    ID: <strong>{user._id || user.id}</strong>
+                  </Typography>
                 </Stack>
 
-                {/* Avatar Clickable to Profile */}
                 <Box
                   component={Link}
-                  to={`/account/${user.id}`}
+                  to={`/account/${user._id || user.id}`}
                   sx={{
                     display: "flex",
                     alignItems: "center",
@@ -114,13 +118,23 @@ function Navbar() {
                 <Button
                   color="inherit"
                   component={Link}
-                  to={`/account/${user.id}`}
+                  to={`/account/${user._id || user.id}`}
                   sx={{ minWidth: 90 }}
                 >
                   My Profile
                 </Button>
                 <Button color="inherit" onClick={handleLogout}>
                   Logout
+                </Button>
+                {/* 🔔 Notification Button - sends userId via route state */}
+                <Button
+                  color="inherit"
+                  component={Link}
+                  to="/notifications"
+                  state={{ userId: user._id || user.id }}
+                  startIcon={<NotificationsIcon />}
+                >
+                  Notifications
                 </Button>
               </>
             ) : (

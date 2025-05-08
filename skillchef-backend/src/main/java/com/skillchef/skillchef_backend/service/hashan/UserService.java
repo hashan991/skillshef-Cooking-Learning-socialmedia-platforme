@@ -6,17 +6,24 @@ import java.util.Optional;
 import com.skillchef.skillchef_backend.model.hashan.User;
 
 public interface UserService {
+
+    // 🔐 Auth
     User register(User user);
     Optional<User> login(String email, String password);
+    boolean existsByEmail(String email);
+
+    // 👤 User Profile
     User updateUser(String id, User updatedUser);
     void deleteUser(String id);
     Optional<User> getUserById(String id);
-    boolean existsByEmail(String email);
 
-    // ✅ Follow/Unfollow
+    // 🧑‍🤝‍🧑 Follow System
     User follow(String userId, String targetId);
     User unfollow(String userId, String targetId);
-
-    // ✅ Suggest users to follow
     List<User> suggestUsersToFollow(String userId);
+
+    // 🆕 Fetch followers (new method)
+   // ✅ Implementation for getFollowersOfUser
+  List<String> getFollowersOfUser(String userId);
+
 }

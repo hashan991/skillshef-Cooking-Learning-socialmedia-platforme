@@ -2,7 +2,6 @@ package com.skillchef.skillchef_backend.service.hashan;
 
 import com.skillchef.skillchef_backend.model.hashan.User;
 import com.skillchef.skillchef_backend.repository.hashan.UserRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -91,7 +90,6 @@ public class UserServiceImpl implements UserService {
         return userRepo.save(user);
     }
 
-    // ✅ Suggest users that the current user is not already following
     @Override
     public List<User> suggestUsersToFollow(String userId) {
         User currentUser = userRepo.findById(userId)
@@ -105,4 +103,13 @@ public class UserServiceImpl implements UserService {
                 .limit(5) // limit suggestions
                 .collect(Collectors.toList());
     }
+
+    // ✅ Get list of follower user IDs (used for sending notifications)
+  @Override
+public List<String> getFollowersOfUser(String userId) {
+    User user = userRepo.findById(userId)
+        .orElseThrow(() -> new RuntimeException("User not found"));
+    return new ArrayList<>(user.getFollowers());
+}
+
 }

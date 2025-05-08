@@ -2,6 +2,10 @@ package com.skillchef.skillchef_backend.service.nishitha;
 
 import com.skillchef.skillchef_backend.model.nishitha.LearningPlan;
 import com.skillchef.skillchef_backend.repository.nishitha.LearningPlanRepository;
+import com.skillchef.skillchef_backend.service.hashan.NotificationService;
+import com.skillchef.skillchef_backend.service.hashan.UserService;
+import com.skillchef.skillchef_backend.model.hashan.User;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +18,38 @@ public class LearningPlanServiceImpl implements LearningPlanService {
     @Autowired
     private LearningPlanRepository learningPlanRepository;
 
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private UserService userService;
+
     @Override
     public LearningPlan createPlan(LearningPlan plan) {
-        return learningPlanRepository.save(plan);
+        // Save the plan first
+        LearningPlan savedPlan = learningPlanRepository.save(plan);
+
+        // Get the user info
+        User user = userService.getUserById(plan.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        String username = user.getUsername();
+
+        // Get the user's followers
+        List<String> followers = userService.getFollowersOfUser(plan.getUserId());
+
+        // Send notifications to followers
+        for (String followerId : followers) {
+            notificationService.createNotification(
+                followerId,
+                plan.getUserId(),
+                username,
+                "LEARNING_PLAN",
+                username + " created a new learning plan.",
+                null
+            );
+        }
+
+        return savedPlan;
     }
 
     @Override
