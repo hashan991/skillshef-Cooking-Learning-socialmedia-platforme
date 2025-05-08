@@ -10,24 +10,29 @@ function SavedPosts() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchSavedPosts = async () => {
-      try {
-        const userId = user?.id || user?._id;
-        console.log("Fetching saved posts for user:", userId);
+   const fetchSavedPosts = async () => {
+     try {
+       const userId = user?.id || user?._id;
+       if (!userId) return;
 
-        if (!userId) return;
+       const savedIds = await getSavedPostIds(userId);
+       const postResults = await Promise.allSettled(
+         savedIds.map((id) =>
+           axios.get(`http://localhost:8080/api/posts/${id}`)
+         )
+       );
 
-        const savedIds = await getSavedPostIds(userId);
-        const postResponses = await Promise.all(
-          savedIds.map((id) =>
-            axios.get(`http://localhost:8080/api/posts/${id}`)
-          )
-        );
-        setPosts(postResponses.map((res) => res.data));
-      } catch (err) {
-        console.error("❌ Error fetching saved posts:", err.message);
-      }
-    };
+       // Filter out successful responses only
+       const validPosts = postResults
+         .filter((result) => result.status === "fulfilled")
+         .map((result) => result.value.data);
+
+       setPosts(validPosts);
+     } catch (err) {
+       console.error("❌ Error fetching saved posts:", err.message);
+     }
+   };
+
 
     if (user) fetchSavedPosts();
   }, [user]);
