@@ -43,6 +43,7 @@ function Sidebar() {
     { label: "Progress", icon: <TrendingUp />, path: "/progress" },
     { label: "Planning", icon: <Assignment />, path: "/learning-plans" },
     { label: "Profile", icon: <AccountCircle />, path: `/account/${user?.id}` },
+    { label: "Bookmark", icon: <FavoriteBorder />, path: "/saved" },
   ];
 
   return (

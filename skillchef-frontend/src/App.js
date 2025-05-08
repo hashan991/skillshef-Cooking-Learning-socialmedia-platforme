@@ -14,6 +14,7 @@ import MainLayout from "./components/hashan/MainLayout";
 import LearningPlanPage from "./pages/LearningPlanPage";
 import ProgressPage from "./pages/ProgressPage";
 import NotificationsPage from "./pages/NotificationsPage";
+import SavedPosts from "./pages/SavedPosts";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
           <Route path="/learning-plans" element={<LearningPlanPage />} />
           <Route path="/progress" element={<ProgressPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
+          <Route path="/saved" element={<SavedPosts />} />
         </Route>
       </Routes>
     </Router>

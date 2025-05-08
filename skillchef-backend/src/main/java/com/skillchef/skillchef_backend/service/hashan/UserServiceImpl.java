@@ -98,18 +98,43 @@ public class UserServiceImpl implements UserService {
         Set<String> following = currentUser.getFollowing();
 
         return userRepo.findAll().stream()
-                .filter(user -> !user.getId().equals(userId)) // exclude self
-                .filter(user -> !following.contains(user.getId())) // exclude already followed
-                .limit(5) // limit suggestions
+                .filter(user -> !user.getId().equals(userId))
+                .filter(user -> !following.contains(user.getId()))
+                .limit(5)
                 .collect(Collectors.toList());
     }
 
-    // ✅ Get list of follower user IDs (used for sending notifications)
-  @Override
-public List<String> getFollowersOfUser(String userId) {
-    User user = userRepo.findById(userId)
-        .orElseThrow(() -> new RuntimeException("User not found"));
-    return new ArrayList<>(user.getFollowers());
-}
+    @Override
+    public List<String> getFollowersOfUser(String userId) {
+        User user = userRepo.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        return new ArrayList<>(user.getFollowers());
+    }
 
+    // ✅ NEW: Bookmarking posts
+    @Override
+    public void savePost(String userId, String postId) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.savePost(postId); // from User.java
+        userRepo.save(user);
+    }
+
+    @Override
+    public void unsavePost(String userId, String postId) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.unsavePost(postId); // from User.java
+        userRepo.save(user);
+    }
+
+    @Override
+    public List<String> getSavedPostIds(String userId) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return new ArrayList<>(user.getSavedPostIds());
+    }
 }

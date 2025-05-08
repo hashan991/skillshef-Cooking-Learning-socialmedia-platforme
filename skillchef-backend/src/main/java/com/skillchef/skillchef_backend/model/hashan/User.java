@@ -19,9 +19,12 @@ public class User {
     private String location;
     private String joinedAt;
 
-    // ✅ Add these two fields
+    // ✅ Social fields
     private Set<String> followers = new HashSet<>();
     private Set<String> following = new HashSet<>();
+
+    // ✅ NEW: Saved posts (bookmarks)
+    private Set<String> savedPostIds = new HashSet<>();
 
     public User() {}
 
@@ -35,6 +38,7 @@ public class User {
         this.joinedAt = joinedAt;
         this.followers = new HashSet<>();
         this.following = new HashSet<>();
+        this.savedPostIds = new HashSet<>();
     }
 
     public String getId() { return id; }
@@ -60,10 +64,30 @@ public class User {
     public String getJoinedAt() { return joinedAt; }
     public void setJoinedAt(String joinedAt) { this.joinedAt = joinedAt; }
 
-    // ✅ Add getters and setters
     public Set<String> getFollowers() { return followers; }
     public void setFollowers(Set<String> followers) { this.followers = followers; }
 
     public Set<String> getFollowing() { return following; }
     public void setFollowing(Set<String> following) { this.following = following; }
+
+    // ✅ Saved Post Getters/Setters
+    public Set<String> getSavedPostIds() {
+        return savedPostIds;
+    }
+
+    public void setSavedPostIds(Set<String> savedPostIds) {
+        this.savedPostIds = savedPostIds;
+    }
+
+    // ✅ Save post method
+    public void savePost(String postId) {
+        if (!this.savedPostIds.contains(postId)) {
+            this.savedPostIds.add(postId);
+        }
+    }
+
+    // ✅ Unsave post method
+    public void unsavePost(String postId) {
+        this.savedPostIds.remove(postId);
+    }
 }

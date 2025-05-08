@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
 import CommentSection from "../nishan/CommentSection";
-
 import {
   Card,
   CardContent,
@@ -24,9 +23,12 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ShareIcon from "@mui/icons-material/Share";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import { savePost, unsavePost, getSavedPostIds } from "../../api/bookmarkApi";
 
 function PostCard({ post, onDelete }) {
   const navigate = useNavigate();
@@ -35,6 +37,7 @@ function PostCard({ post, onDelete }) {
   const [toastOpen, setToastOpen] = useState(false);
   const [postUser, setPostUser] = useState(null);
   const [shareToast, setShareToast] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
 
   useEffect(() => {
     if (post.userId) {
@@ -43,7 +46,20 @@ function PostCard({ post, onDelete }) {
         .then((res) => setPostUser(res.data))
         .catch((err) => console.error("Failed to fetch user", err));
     }
-  }, [post.userId]);
+
+    const fetchBookmarkStatus = async () => {
+      try {
+        if (user) {
+          const savedIds = await getSavedPostIds(user?.id || user?._id);
+          setIsBookmarked(savedIds.includes(post.id));
+        }
+      } catch (err) {
+        console.error("Error fetching bookmark status:", err);
+      }
+    };
+
+    fetchBookmarkStatus();
+  }, [post.userId, post.id, user]);
 
   const handleEdit = () => {
     navigate(`/edit-post/${post.id}`, { state: { post } });
@@ -78,6 +94,21 @@ function PostCard({ post, onDelete }) {
     }
   };
 
+  const toggleBookmark = async () => {
+    try {
+      const userId = user?.id || user?._id;
+      if (isBookmarked) {
+        await unsavePost(userId, post.id);
+        setIsBookmarked(false);
+      } else {
+        await savePost(userId, post.id);
+        setIsBookmarked(true);
+      }
+    } catch (err) {
+      console.error("Bookmark toggle failed:", err);
+    }
+  };
+
   const imageUrl =
     post.mediaUrls?.length > 0
       ? `http://localhost:8080${post.mediaUrls[0]}`
@@ -93,7 +124,6 @@ function PostCard({ post, onDelete }) {
           boxShadow: 3,
         }}
       >
-        {/* 🧑‍🍳 Top User Info Row */}
         <Box
           display="flex"
           alignItems="center"
@@ -101,7 +131,6 @@ function PostCard({ post, onDelete }) {
           px={2}
           pt={2}
         >
-          {/* ✅ Only make user info clickable */}
           <Box
             display="flex"
             alignItems="center"
@@ -118,7 +147,6 @@ function PostCard({ post, onDelete }) {
             </Typography>
           </Box>
 
-          {/* 🛠️ Icons (Edit/Delete/Share) */}
           <Stack direction="row" spacing={1}>
             {user?.id === post.userId && (
               <>
@@ -130,6 +158,17 @@ function PostCard({ post, onDelete }) {
                 </IconButton>
               </>
             )}
+
+            <Tooltip title={isBookmarked ? "Unsave post" : "Save post"}>
+              <IconButton onClick={toggleBookmark}>
+                {isBookmarked ? (
+                  <BookmarkIcon color="primary" />
+                ) : (
+                  <BookmarkBorderIcon />
+                )}
+              </IconButton>
+            </Tooltip>
+
             <Tooltip title="Share this post">
               <IconButton onClick={handleShare}>
                 <ShareIcon />
@@ -138,7 +177,6 @@ function PostCard({ post, onDelete }) {
           </Stack>
         </Box>
 
-        {/* 📷 Post Media */}
         {imageUrl && (
           <CardMedia
             component="img"
@@ -176,6 +214,7 @@ function PostCard({ post, onDelete }) {
             ))}
           </Box>
         </CardContent>
+
         <Button
           variant="text"
           size="small"
@@ -186,7 +225,6 @@ function PostCard({ post, onDelete }) {
         </Button>
       </Card>
 
-      {/* Confirm Delete */}
       <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
@@ -202,7 +240,6 @@ function PostCard({ post, onDelete }) {
         </DialogActions>
       </Dialog>
 
-      {/* Delete Toast */}
       <Snackbar
         open={toastOpen}
         autoHideDuration={3000}
@@ -218,7 +255,6 @@ function PostCard({ post, onDelete }) {
         </Alert>
       </Snackbar>
 
-      {/* Share Toast */}
       <Snackbar
         open={shareToast}
         autoHideDuration={3000}
