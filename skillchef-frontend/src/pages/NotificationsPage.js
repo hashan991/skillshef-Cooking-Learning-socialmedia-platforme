@@ -53,9 +53,7 @@ function NotificationPage() {
       <Typography variant="h5" gutterBottom>
         🔔 Your Notifications
       </Typography>
-      <Typography fontSize="12px" color="black">
-        Logged in as: <strong>{userId}</strong>
-      </Typography>
+      
       <List>
         {notifications.length === 0 ? (
           <Typography>No notifications found.</Typography>

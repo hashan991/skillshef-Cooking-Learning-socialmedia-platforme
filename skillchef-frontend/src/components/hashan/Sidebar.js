@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import {
   Home,
-  Search,
   FavoriteBorder,
   AddBox,
   AccountCircle,
@@ -33,12 +32,6 @@ function Sidebar() {
 
   const menuItems = [
     { label: "Home", icon: <Home />, path: "/home" },
-    { label: "Search", icon: <Search />, path: "/search" },
-    {
-      label: "Notifications",
-      icon: <FavoriteBorder />,
-      path: "/notifications",
-    },
     { label: "Create", icon: <AddBox />, path: "/create" },
     { label: "Progress", icon: <TrendingUp />, path: "/progress" },
     { label: "Planning", icon: <Assignment />, path: "/learning-plans" },

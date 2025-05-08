@@ -94,9 +94,7 @@ function Navbar() {
                   <Typography fontSize="12px" color="black">
                     {user.email}
                   </Typography>
-                  <Typography fontSize="12px" color="black">
-                    ID: <strong>{user._id || user.id}</strong>
-                  </Typography>
+                 
                 </Stack>
 
                 <Box
