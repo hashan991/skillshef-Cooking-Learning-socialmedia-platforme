@@ -9,9 +9,12 @@ import {
   Stack,
   Snackbar,
   Alert,
+  Grid,
+  IconButton,
 } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 function PostForm() {
   const { user } = useContext(AuthContext);
@@ -26,6 +29,7 @@ function PostForm() {
   });
 
   const [files, setFiles] = useState([]);
+  const [previewURLs, setPreviewURLs] = useState([]);
   const [errors, setErrors] = useState({});
   const [toast, setToast] = useState({
     open: false,
@@ -35,15 +39,15 @@ function PostForm() {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: "" }); // Clear error on change
+    setErrors({ ...errors, [e.target.name]: "" });
   };
 
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
-    if (selectedFiles.length > 3) {
+    if (selectedFiles.length + files.length > 3) {
       setToast({
         open: true,
-        message: "You can upload a maximum of 3 images.",
+        message: "You can only upload a maximum of 3 images.",
         severity: "error",
       });
       return;
@@ -62,7 +66,18 @@ function PostForm() {
       return;
     }
 
-    setFiles(validImages);
+    const previews = validImages.map((file) => URL.createObjectURL(file));
+    setPreviewURLs((prev) => [...prev, ...previews]);
+    setFiles((prev) => [...prev, ...validImages]);
+  };
+
+  const removeImage = (index) => {
+    const updatedFiles = [...files];
+    const updatedPreviews = [...previewURLs];
+    updatedFiles.splice(index, 1);
+    updatedPreviews.splice(index, 1);
+    setFiles(updatedFiles);
+    setPreviewURLs(updatedPreviews);
   };
 
   const validateForm = () => {
@@ -88,7 +103,7 @@ function PostForm() {
     formData.append("category", form.category);
     formData.append("difficulty", form.difficulty);
     formData.append("hashtags", form.hashtags);
-    formData.append("userId", user?.id);
+    formData.append("userId", user?.id || user?._id);
 
     files.forEach((file) => {
       formData.append("files", file);
@@ -99,6 +114,7 @@ function PostForm() {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        withCredentials: true,
       });
 
       setToast({
@@ -115,6 +131,7 @@ function PostForm() {
         hashtags: "",
       });
       setFiles([]);
+      setPreviewURLs([]);
 
       setTimeout(() => navigate("/home"), 1000);
     } catch (err) {
@@ -201,10 +218,32 @@ function PostForm() {
           />
         </Button>
 
-        {files.length > 0 && (
-          <Typography variant="body2" color="text.secondary">
-            {files.length} image(s) selected
-          </Typography>
+        {previewURLs.length > 0 && (
+          <Grid container spacing={1}>
+            {previewURLs.map((url, index) => (
+              <Grid item xs={4} key={index}>
+                <Box
+                  component="img"
+                  src={url}
+                  alt={`Preview ${index}`}
+                  sx={{
+                    width: "100%",
+                    height: 100,
+                    objectFit: "cover",
+                    borderRadius: 1,
+                    position: "relative",
+                  }}
+                />
+                <IconButton
+                  onClick={() => removeImage(index)}
+                  size="small"
+                  sx={{ position: "absolute", top: 4, right: 4 }}
+                >
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
+              </Grid>
+            ))}
+          </Grid>
         )}
 
         <Button type="submit" variant="contained" color="primary">

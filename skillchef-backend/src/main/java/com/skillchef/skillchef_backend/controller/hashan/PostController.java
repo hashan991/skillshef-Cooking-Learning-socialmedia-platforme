@@ -7,8 +7,6 @@ import com.skillchef.skillchef_backend.service.hashan.PostService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
-//import org.springframework.hateoas.Link;
-//import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,11 +20,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequestMapping("/api/posts")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class PostController {
 
     @Autowired
     private PostService postService;
+
+    private static final int MAX_FILES = 3;
 
     @PostMapping(consumes = {"multipart/form-data"})
     public ResponseEntity<String> createPostWithFiles(
@@ -39,18 +39,11 @@ public class PostController {
             @RequestParam("files") List<MultipartFile> files
     ) {
         try {
-            List<String> imagePaths = new ArrayList<>();
-            String uploadDir = System.getProperty("user.dir") + "/skillchef-backend/uploads/";
-
-            for (MultipartFile file : files) {
-                if (!file.isEmpty()) {
-                    String safeFileName = UUID.randomUUID() + "_" + file.getOriginalFilename().replaceAll(" ", "_");
-                    Path filePath = Paths.get(uploadDir + safeFileName);
-                    Files.createDirectories(filePath.getParent());
-                    Files.write(filePath, file.getBytes());
-                    imagePaths.add("/uploads/" + safeFileName);
-                }
+            if (files.size() > MAX_FILES) {
+                return ResponseEntity.badRequest().body("Only up to 3 images are allowed.");
             }
+
+            List<String> imagePaths = saveFiles(files);
 
             List<String> hashtagList = Arrays.stream(hashtags.split(","))
                     .map(String::trim)
@@ -75,17 +68,6 @@ public class PostController {
         }
     }
 
-    @PutMapping("/{id}")
-    public EntityModel<PostResponseDTO> updatePost(@PathVariable String id, @RequestBody PostRequestDTO dto) {
-        PostResponseDTO updatedPost = postService.updatePost(id, dto);
-
-        return EntityModel.of(updatedPost,
-                linkTo(methodOn(PostController.class).getPostById(id)).withSelfRel(),
-                linkTo(methodOn(PostController.class).deletePost(id)).withRel("delete"),
-                linkTo(methodOn(PostController.class).getAllPosts()).withRel("all-posts")
-        );
-    }
-
     @PutMapping(value = "/{id}/with-images", consumes = "multipart/form-data")
     public ResponseEntity<String> updatePostWithFiles(
             @PathVariable String id,
@@ -104,18 +86,11 @@ public class PostController {
             Post post = optionalPost.get();
 
             if (files != null && !files.isEmpty()) {
-                List<String> newImagePaths = new ArrayList<>();
-                String uploadDir = System.getProperty("user.dir") + "/skillchef-backend/uploads/";
-
-                for (MultipartFile file : files) {
-                    if (!file.isEmpty()) {
-                        String safeFileName = UUID.randomUUID() + "_" + file.getOriginalFilename().replaceAll(" ", "_");
-                        Path filePath = Paths.get(uploadDir + safeFileName);
-                        Files.createDirectories(filePath.getParent());
-                        Files.write(filePath, file.getBytes());
-                        newImagePaths.add("/uploads/" + safeFileName);
-                    }
+                if (files.size() > MAX_FILES) {
+                    return ResponseEntity.badRequest().body("Only up to 3 images are allowed.");
                 }
+
+                List<String> newImagePaths = saveFiles(files);
                 post.setMediaUrls(newImagePaths);
             }
 
@@ -133,6 +108,31 @@ public class PostController {
         }
     }
 
+    private List<String> saveFiles(List<MultipartFile> files) throws IOException {
+        List<String> imagePaths = new ArrayList<>();
+        String uploadDir = System.getProperty("user.dir") + "/skillchef-backend/uploads/";
+
+        for (MultipartFile file : files) {
+            if (!file.isEmpty() && file.getContentType().startsWith("image")) {
+                String safeFileName = UUID.randomUUID() + "_" + file.getOriginalFilename().replaceAll(" ", "_");
+                Path filePath = Paths.get(uploadDir + safeFileName);
+                Files.createDirectories(filePath.getParent());
+                Files.write(filePath, file.getBytes());
+                imagePaths.add("/uploads/" + safeFileName);
+            }
+        }
+        return imagePaths;
+    }
+
+    @PutMapping("/{id}")
+    public EntityModel<PostResponseDTO> updatePost(@PathVariable String id, @RequestBody PostRequestDTO dto) {
+        PostResponseDTO updatedPost = postService.updatePost(id, dto);
+        return EntityModel.of(updatedPost,
+                linkTo(methodOn(PostController.class).getPostById(id)).withSelfRel(),
+                linkTo(methodOn(PostController.class).deletePost(id)).withRel("delete"),
+                linkTo(methodOn(PostController.class).getAllPosts()).withRel("all-posts"));
+    }
+
     @GetMapping
     public List<EntityModel<PostResponseDTO>> getAllPosts() {
         List<PostResponseDTO> posts = postService.getAllPosts();
@@ -142,11 +142,9 @@ public class PostController {
             EntityModel<PostResponseDTO> model = EntityModel.of(post,
                     linkTo(methodOn(PostController.class).getPostById(post.getId())).withSelfRel(),
                     linkTo(methodOn(PostController.class).deletePost(post.getId())).withRel("delete"),
-                    linkTo(methodOn(PostController.class).getAllPosts()).withRel("all-posts")
-            );
+                    linkTo(methodOn(PostController.class).getAllPosts()).withRel("all-posts"));
             result.add(model);
         }
-
         return result;
     }
 
@@ -156,8 +154,7 @@ public class PostController {
         return EntityModel.of(post,
                 linkTo(methodOn(PostController.class).getPostById(id)).withSelfRel(),
                 linkTo(methodOn(PostController.class).getAllPosts()).withRel("all-posts"),
-                linkTo(methodOn(PostController.class).deletePost(id)).withRel("delete")
-        );
+                linkTo(methodOn(PostController.class).deletePost(id)).withRel("delete"));
     }
 
     @DeleteMapping("/{id}")

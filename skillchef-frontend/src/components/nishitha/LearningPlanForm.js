@@ -27,9 +27,11 @@ const LearningPlanForm = ({
     category: "",
     goal: "",
     durationInDays: "",
-    startDateTime: dayjs().format("YYYY-MM-DDTHH:mm"), // 🕒 Default to now
+    startDateTime: dayjs().format("YYYY-MM-DDTHH:mm"),
     steps: [{ step: "", completed: false }],
   });
+
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (editingPlan) {
@@ -82,10 +84,22 @@ const LearningPlanForm = ({
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    const newErrors = {};
+
     if (Number(form.durationInDays) < 1) {
-      alert("Duration must be at least 1 day.");
+      newErrors.durationInDays = "Duration must be at least 1 day.";
+    }
+
+    if (dayjs(form.startDateTime).isBefore(dayjs())) {
+      newErrors.startDateTime = "Start date cannot be in the past.";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
+
+    setErrors({});
 
     const planData = {
       ...form,
@@ -94,7 +108,6 @@ const LearningPlanForm = ({
 
     onSubmit(planData);
   };
-  
 
   return (
     <Paper
@@ -156,12 +169,8 @@ const LearningPlanForm = ({
             fullWidth
             required
             inputProps={{ min: 1, step: 1 }}
-            error={form.durationInDays < 1}
-            helperText={
-              form.durationInDays < 1
-                ? "Please enter a valid duration (1 or more)"
-                : ""
-            }
+            error={!!errors.durationInDays}
+            helperText={errors.durationInDays}
           />
 
           <TextField
@@ -173,6 +182,11 @@ const LearningPlanForm = ({
             fullWidth
             required
             InputLabelProps={{ shrink: true }}
+            inputProps={{
+              min: dayjs().format("YYYY-MM-DDTHH:mm"),
+            }}
+            error={!!errors.startDateTime}
+            helperText={errors.startDateTime}
           />
 
           <Typography variant="subtitle1" fontWeight={500}>
@@ -228,5 +242,3 @@ const LearningPlanForm = ({
 };
 
 export default LearningPlanForm;
-
-

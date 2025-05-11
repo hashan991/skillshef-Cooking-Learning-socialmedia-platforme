@@ -1,9 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
-import CommentSection from "../nishan/CommentSection";
 import {
   Card,
   CardContent,
-  CardMedia,
   Typography,
   Box,
   Chip,
@@ -109,16 +107,20 @@ function PostCard({ post, onDelete }) {
     }
   };
 
-  const imageUrl =
-    post.mediaUrls?.length > 0
-      ? `http://localhost:8080${post.mediaUrls[0]}`
-      : null;
+  const imageUrls = post.mediaUrls?.map((url) => `http://localhost:8080${url}`);
+
+  // 💡 Calculate width based on image count
+  const getImageWidth = (count) => {
+    if (count === 1) return "100%";
+    if (count === 2) return "calc(50% - 6px)";
+    if (count >= 3) return "calc(33.33% - 6px)";
+  };
 
   return (
     <>
       <Card
         sx={{
-          maxWidth: 500,
+          maxWidth: 600,
           margin: "20px auto",
           borderRadius: 4,
           boxShadow: 3,
@@ -177,14 +179,33 @@ function PostCard({ post, onDelete }) {
           </Stack>
         </Box>
 
-        {imageUrl && (
-          <CardMedia
-            component="img"
-            height="300"
-            image={imageUrl}
-            alt={post.title}
-            sx={{ objectFit: "cover", mt: 1 }}
-          />
+        {/* 🖼 Image Grid */}
+        {imageUrls?.length > 0 && (
+          <Box
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 1,
+              mt: 1,
+              px: 1,
+              justifyContent: imageUrls.length === 1 ? "center" : "flex-start",
+            }}
+          >
+            {imageUrls.map((url, index) => (
+              <Box
+                key={index}
+                component="img"
+                src={url}
+                alt={`Image ${index + 1}`}
+                sx={{
+                  width: getImageWidth(imageUrls.length),
+                  height: 200,
+                  objectFit: "cover",
+                  borderRadius: 2,
+                }}
+              />
+            ))}
+          </Box>
         )}
 
         <CardContent>
@@ -225,6 +246,7 @@ function PostCard({ post, onDelete }) {
         </Button>
       </Card>
 
+      {/* ❌ Confirm Delete Dialog */}
       <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
@@ -240,6 +262,7 @@ function PostCard({ post, onDelete }) {
         </DialogActions>
       </Dialog>
 
+      {/* ✅ Post Deleted Snackbar */}
       <Snackbar
         open={toastOpen}
         autoHideDuration={3000}
@@ -255,6 +278,7 @@ function PostCard({ post, onDelete }) {
         </Alert>
       </Snackbar>
 
+      {/* 🔗 Link Copied Snackbar */}
       <Snackbar
         open={shareToast}
         autoHideDuration={3000}

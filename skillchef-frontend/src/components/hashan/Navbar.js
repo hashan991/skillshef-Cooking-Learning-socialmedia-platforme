@@ -1,5 +1,7 @@
 // src/components/Navbar.js
 import React, { useContext } from "react";
+import logoImg from "../../images/logo.png";
+
 import { Link, useNavigate } from "react-router-dom";
 import {
   AppBar,
@@ -46,20 +48,26 @@ function Navbar() {
             flexWrap: "wrap",
           }}
         >
-          {/* 🍳 Logo */}
-          <Typography
-            variant="h6"
+          <Box
             component={Link}
             to="/"
             sx={{
+              display: "flex",
+              alignItems: "center",
               textDecoration: "none",
               color: "black",
-              fontWeight: 700,
               ml: 30,
             }}
           >
-            SkillChef 🍳
-          </Typography>
+            <img
+              src={logoImg}
+              alt="SkillChef Logo"
+              style={{ width: 60, height: 60, marginRight: 8 }}
+            />
+            <Typography variant="h6" fontWeight={700}>
+              SkillChef 🍳
+            </Typography>
+          </Box>
 
           {/* 👤 User Section */}
           <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
@@ -115,27 +123,27 @@ function Navbar() {
             ) : (
               <>
                 {/* 🔍 Search bar */}
-               
-                  <Box
-                    sx={{
-                      bgcolor: "#fff",
-                      px: 2,
-                      py: 0.5,
-                      borderRadius: 2,
-                      display: "flex",
-                      alignItems: "center",
-                      width: 300,
-                      mx: 2,
-                      ml:3
-                    }}
-                  >
-                    <SearchIcon color="action" />
-                    <InputBase
-                      placeholder="Search posts or users…"
-                      sx={{ ml: 5, flex: 1 }}
-                    />
-                  </Box>
-                
+
+                <Box
+                  sx={{
+                    bgcolor: "#fff",
+                    px: 2,
+                    py: 0.5,
+                    borderRadius: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    width: 300,
+                    mx: 2,
+                    ml: 3,
+                  }}
+                >
+                  <SearchIcon color="action" />
+                  <InputBase
+                    placeholder="Search posts or users…"
+                    sx={{ ml: 5, flex: 1 }}
+                  />
+                </Box>
+
                 <Button color="inherit" component={Link} to="/login">
                   Login
                 </Button>
