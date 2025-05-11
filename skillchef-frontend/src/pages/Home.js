@@ -53,7 +53,7 @@ function Home() {
   };
 
   return (
-    <Container sx={{ mt: 4, ml: 30 }}>
+    <Container sx={{ mt: 12, ml: 30 }}>
       <Grid container spacing={3}>
         {/* Left Side - Posts */}
         <Grid item xs={12} md={8}>

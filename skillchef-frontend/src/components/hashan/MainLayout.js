@@ -23,7 +23,7 @@ function MainLayout() {
         {/* Fixed Navbar with z-index */}
         {user && <Sidebar />}
         {/* Padding for content to appear below the fixed navbar */}
-        <Box sx={{ p: 3, pt: "80px" }}>
+        <Box sx={{ p: 0, pt: "0px" }}>
           <Outlet />
         </Box>
       </Box>

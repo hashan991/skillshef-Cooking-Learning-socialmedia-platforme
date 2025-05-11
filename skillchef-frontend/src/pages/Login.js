@@ -6,6 +6,7 @@ import {
   Typography,
   Snackbar,
   Alert,
+  Box,
 } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -43,44 +44,120 @@ function Login() {
   };
 
   return (
-    <Container maxWidth="xs" sx={{ mt: 10 }}>
-      <Typography variant="h5" gutterBottom>
-        Login
-      </Typography>
-      <form onSubmit={handleSubmit}>
-        <TextField
-          fullWidth
-          label="Email"
-          name="email"
-          value={form.email}
-          onChange={handleChange}
-          margin="normal"
-        />
-        <TextField
-          fullWidth
-          label="Password"
-          name="password"
-          type="password"
-          value={form.password}
-          onChange={handleChange}
-          margin="normal"
-        />
-        <Button fullWidth variant="contained" type="submit" sx={{ mt: 2 }}>
-          Login
-        </Button>
-      </form>
-
-      {/* 🔥 Toast for error */}
-      <Snackbar
-        open={!!error}
-        autoHideDuration={3000}
-        onClose={() => setError(null)}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+    <Box sx={{ display: "flex", minHeight: "100vh" }}>
+      {/* Left Side - Login Form */}
+      <Box
+        sx={{
+          flex: 1,
+          background: "linear-gradient(to bottom right, #fffbd5, #b20a2c0f)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
       >
-        <Alert severity="error">{error}</Alert>
-      </Snackbar>
-    </Container>
+        <Box
+          sx={{
+            width: "90%",
+            maxWidth: 400,
+            backgroundColor: "white",
+            p: 4,
+            borderRadius: 2,
+            boxShadow: 3,
+          }}
+        >
+          <Typography
+            variant="h5"
+            align="center"
+            fontWeight="bold"
+            gutterBottom
+          >
+            Manage Your Home <br /> Effortlessly
+          </Typography>
+          <Typography variant="body2" align="center" mb={2}>
+            Log in to your account
+          </Typography>
+
+          <form onSubmit={handleSubmit}>
+            <TextField
+              fullWidth
+              label="Email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              margin="normal"
+            />
+            <TextField
+              fullWidth
+              label="Password"
+              name="password"
+              type="password"
+              value={form.password}
+              onChange={handleChange}
+              margin="normal"
+            />
+
+            <Button
+              fullWidth
+              variant="contained"
+              type="submit"
+              sx={{ mt: 2, mb: 1 }}
+            >
+              LOG IN
+            </Button>
+
+            <Box display="flex" alignItems="center" mb={1}>
+              <input
+                type="checkbox"
+                id="keepLoggedIn"
+                style={{ marginRight: 8 }}
+              />
+              <label htmlFor="keepLoggedIn">Keep me logged in</label>
+            </Box>
+
+            <Typography variant="body2" align="center">
+              Don’t have an account?{" "}
+              <span
+                style={{ color: "#007bff", cursor: "pointer" }}
+                onClick={() => navigate("/register")}
+              >
+                Register
+              </span>
+            </Typography>
+
+            <Button
+              fullWidth
+              variant="outlined"
+              sx={{ mt: 2 }}
+              onClick={() => navigate("/")}
+            >
+              BACK TO HOME
+            </Button>
+          </form>
+
+          {/* Error Toast */}
+          <Snackbar
+            open={!!error}
+            autoHideDuration={3000}
+            onClose={() => setError(null)}
+            anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          >
+            <Alert severity="error">{error}</Alert>
+          </Snackbar>
+        </Box>
+      </Box>
+
+      {/* Right Side - Background Image */}
+      <Box
+        sx={{
+          flex: 1,
+          backgroundImage: `url("https://cdn.pixabay.com/photo/2016/03/27/21/34/restaurant-1284351_1280.jpg")`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      />
+    </Box>
   );
+  
 }
 
 export default Login;
