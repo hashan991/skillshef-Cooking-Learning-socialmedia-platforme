@@ -1,13 +1,16 @@
 package com.skillchef.skillchef_backend.model.hashan;
 
-import java.util.Set;
-import java.util.HashSet;
-
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
 @Document("users")
 public class User {
+
     @Id
     private String id;
 
@@ -17,7 +20,9 @@ public class User {
     private String bio;
     private String profilePic;
     private String location;
-    private String joinedAt;
+
+    @CreatedDate
+    private LocalDateTime createdAt;
 
     // ✅ Social fields
     private Set<String> followers = new HashSet<>();
@@ -28,14 +33,14 @@ public class User {
 
     public User() {}
 
-    public User(String username, String email, String password, String bio, String profilePic, String location, String joinedAt) {
+    public User(String username, String email, String password, String bio, String profilePic, String location, LocalDateTime createdAt) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.bio = bio;
         this.profilePic = profilePic;
         this.location = location;
-        this.joinedAt = joinedAt;
+        this.createdAt = createdAt;
         this.followers = new HashSet<>();
         this.following = new HashSet<>();
         this.savedPostIds = new HashSet<>();
@@ -61,8 +66,8 @@ public class User {
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
 
-    public String getJoinedAt() { return joinedAt; }
-    public void setJoinedAt(String joinedAt) { this.joinedAt = joinedAt; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
     public Set<String> getFollowers() { return followers; }
     public void setFollowers(Set<String> followers) { this.followers = followers; }
@@ -70,23 +75,15 @@ public class User {
     public Set<String> getFollowing() { return following; }
     public void setFollowing(Set<String> following) { this.following = following; }
 
-    // ✅ Saved Post Getters/Setters
-    public Set<String> getSavedPostIds() {
-        return savedPostIds;
-    }
+    public Set<String> getSavedPostIds() { return savedPostIds; }
+    public void setSavedPostIds(Set<String> savedPostIds) { this.savedPostIds = savedPostIds; }
 
-    public void setSavedPostIds(Set<String> savedPostIds) {
-        this.savedPostIds = savedPostIds;
-    }
-
-    // ✅ Save post method
     public void savePost(String postId) {
         if (!this.savedPostIds.contains(postId)) {
             this.savedPostIds.add(postId);
         }
     }
 
-    // ✅ Unsave post method
     public void unsavePost(String postId) {
         this.savedPostIds.remove(postId);
     }

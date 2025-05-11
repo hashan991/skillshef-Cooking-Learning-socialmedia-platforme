@@ -16,6 +16,7 @@ public interface UserService {
     User updateUser(String id, User updatedUser);
     void deleteUser(String id);
     Optional<User> getUserById(String id);
+    Optional<User> getUserByEmail(String email); // ✅ NEW for OAuth2 login
 
     // 🧑‍🤝‍🧑 Follow System
     User follow(String userId, String targetId);

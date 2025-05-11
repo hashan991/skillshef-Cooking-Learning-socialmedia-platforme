@@ -10,15 +10,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true") // ✅ Allow frontend
 public class UserController {
 
     @Autowired
@@ -45,11 +51,13 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserLoginDTO loginDto) {
-        return userService
-                .login(loginDto.getEmail(), loginDto.getPassword())
-                .<ResponseEntity<?>>map(user -> ResponseEntity.ok(new UserResponseDTO(user)))
-                .orElseGet(() -> ResponseEntity.status(401).body("Invalid credentials"));
+    public ResponseEntity<?> login(@RequestBody UserLoginDTO loginDto, HttpServletRequest request) {
+        Optional<User> user = userService.login(loginDto.getEmail(), loginDto.getPassword());
+        if (user.isPresent()) {
+            request.getSession(true).setAttribute("user", user.get()); // ✅ store in session
+            return ResponseEntity.ok(new UserResponseDTO(user.get()));
+        }
+        return ResponseEntity.status(401).body("Invalid credentials");
     }
 
     @PutMapping(value = "/{id}", consumes = "multipart/form-data")
@@ -118,5 +126,28 @@ public class UserController {
     @GetMapping("/suggestions/{userId}")
     public List<User> suggestUsers(@PathVariable String userId) {
         return userService.suggestUsersToFollow(userId);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getLoggedInUser(
+            @AuthenticationPrincipal OAuth2User oAuth2User,
+            HttpSession session
+    ) {
+        // ✅ Manual Login
+        User sessionUser = (User) session.getAttribute("user");
+        if (sessionUser != null) {
+            return ResponseEntity.ok(new UserResponseDTO(sessionUser));
+        }
+
+        // ✅ Google OAuth2
+        if (oAuth2User != null) {
+            String email = oAuth2User.getAttribute("email");
+            Optional<User> optionalUser = userService.getUserByEmail(email);
+            return optionalUser
+                    .<ResponseEntity<?>>map(user -> ResponseEntity.ok(new UserResponseDTO(user)))
+                    .orElseGet(() -> ResponseEntity.status(404).body("User not found"));
+        }
+
+        return ResponseEntity.status(401).body("Not authenticated");
     }
 }

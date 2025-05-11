@@ -1,5 +1,6 @@
 package com.skillchef.skillchef_backend.dto.hashan;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
 import com.skillchef.skillchef_backend.model.hashan.User;
@@ -11,7 +12,7 @@ public class UserResponseDTO {
     private String bio;
     private String profilePic;
     private String location;
-    private String joinedAt;
+    private String joinedAt; // Still a String here, but from createdAt (formatted)
 
     private Set<String> followers;
     private Set<String> following;
@@ -26,7 +27,12 @@ public class UserResponseDTO {
         this.bio = user.getBio();
         this.profilePic = user.getProfilePic();
         this.location = user.getLocation();
-        this.joinedAt = user.getJoinedAt();
+
+        // ✅ Format createdAt (LocalDateTime) into a readable string
+        this.joinedAt = user.getCreatedAt() != null
+                ? user.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
+                : "N/A";
+
         this.followers = user.getFollowers();
         this.following = user.getFollowing();
 

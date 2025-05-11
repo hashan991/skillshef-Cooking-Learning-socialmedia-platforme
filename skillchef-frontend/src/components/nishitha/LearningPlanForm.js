@@ -81,12 +81,20 @@ const LearningPlanForm = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (Number(form.durationInDays) < 1) {
+      alert("Duration must be at least 1 day.");
+      return;
+    }
+
     const planData = {
       ...form,
-      userId: user?.id, // ✅ Auto attach userId
+      userId: user?.id,
     };
+
     onSubmit(planData);
   };
+  
 
   return (
     <Paper
@@ -147,8 +155,15 @@ const LearningPlanForm = ({
             onChange={handleChange}
             fullWidth
             required
-            inputProps={{ min: 1 }}
+            inputProps={{ min: 1, step: 1 }}
+            error={form.durationInDays < 1}
+            helperText={
+              form.durationInDays < 1
+                ? "Please enter a valid duration (1 or more)"
+                : ""
+            }
           />
+
           <TextField
             label="Start Date and Time"
             name="startDateTime"

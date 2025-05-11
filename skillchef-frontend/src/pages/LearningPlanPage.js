@@ -6,7 +6,7 @@ import {
   updatePlan,
 } from "../services/learningPlanService";
 import LearningPlanForm from "../components/nishitha/LearningPlanForm";
-import { AuthContext } from "../context/AuthContext"; // ✅ Import AuthContext
+import { AuthContext } from "../context/AuthContext";
 
 import {
   Snackbar,
@@ -22,13 +22,15 @@ import {
   List,
   ListItem,
   Container,
+  TextField,
 } from "@mui/material";
 
 const LearningPlanPage = () => {
-  const { user } = useContext(AuthContext); // ✅ get logged-in user
+  const { user } = useContext(AuthContext);
   const [plans, setPlans] = useState([]);
   const [editingPlan, setEditingPlan] = useState(null);
   const [formResetTrigger, setFormResetTrigger] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [toast, setToast] = useState({
     open: false,
@@ -47,10 +49,7 @@ const LearningPlanPage = () => {
   const loadPlans = async () => {
     try {
       const data = await getAllPlans();
-
-      // ✅ Only show plans that belong to this user
       const userPlans = data.filter((plan) => plan.userId === user?.id);
-
       setPlans(userPlans);
     } catch (err) {
       showToast("Failed to load plans", "error");
@@ -99,7 +98,6 @@ const LearningPlanPage = () => {
       "Are you sure you want to delete this plan?"
     );
     if (!confirm) return;
-
     try {
       await deletePlan(id);
       loadPlans();
@@ -124,10 +122,7 @@ const LearningPlanPage = () => {
     const updatedSteps = [...plan.steps];
     updatedSteps[stepIndex].completed = !updatedSteps[stepIndex].completed;
 
-    const updatedPlan = {
-      ...plan,
-      steps: updatedSteps,
-    };
+    const updatedPlan = { ...plan, steps: updatedSteps };
 
     try {
       await updatePlan(planId, updatedPlan);
@@ -138,8 +133,13 @@ const LearningPlanPage = () => {
     }
   };
 
+  // 🔍 Filter plans by title
+  const filteredPlans = plans.filter((plan) =>
+    (plan.title || "").toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <Container maxWidth="md" sx={{ py: 5 }}>
+    <Container maxWidth="md" sx={{ py: 5 , mt:2 }}>
       <Typography variant="h4" textAlign="center" gutterBottom>
         📚 My Learning Plans
       </Typography>
@@ -151,15 +151,28 @@ const LearningPlanPage = () => {
         resetTrigger={formResetTrigger}
       />
 
-      <Typography variant="h5" mt={4} mb={2}>
-        All My Plans
-      </Typography>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mt={4}
+        mb={2}
+      >
+        <Typography variant="h5">All My Plans</Typography>
+        <TextField
+          size="small"
+          label="Search by Title"
+          variant="outlined"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </Box>
 
-      {plans.length === 0 ? (
-        <Typography>No learning plans yet.</Typography>
+      {filteredPlans.length === 0 ? (
+        <Typography>No learning plans found.</Typography>
       ) : (
         <Stack spacing={3}>
-          {plans.map((plan, index) => (
+          {filteredPlans.map((plan, index) => (
             <Card key={index} variant="outlined" sx={{ boxShadow: 2 }}>
               <CardContent>
                 <Typography variant="h6">{plan.title}</Typography>
@@ -167,7 +180,6 @@ const LearningPlanPage = () => {
                   {plan.description}
                 </Typography>
 
-                {/* ✨ NEW: show additional fields */}
                 {plan.category && (
                   <Typography variant="body2" color="text.secondary">
                     📂 Category: {plan.category}

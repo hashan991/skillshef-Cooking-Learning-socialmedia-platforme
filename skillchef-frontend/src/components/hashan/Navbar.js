@@ -61,28 +61,6 @@ function Navbar() {
             SkillChef 🍳
           </Typography>
 
-          {/* 🔍 Search bar */}
-          {user && !isMobile && (
-            <Box
-              sx={{
-                bgcolor: "#fff",
-                px: 2,
-                py: 0.5,
-                borderRadius: 2,
-                display: "flex",
-                alignItems: "center",
-                width: 300,
-                mx: 2,
-              }}
-            >
-              <SearchIcon color="action" />
-              <InputBase
-                placeholder="Search posts or users…"
-                sx={{ ml: 1, flex: 1 }}
-              />
-            </Box>
-          )}
-
           {/* 👤 User Section */}
           <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
             {user ? (
@@ -94,7 +72,6 @@ function Navbar() {
                   <Typography fontSize="12px" color="black">
                     {user.email}
                   </Typography>
-                 
                 </Stack>
 
                 <Box
@@ -137,6 +114,28 @@ function Navbar() {
               </>
             ) : (
               <>
+                {/* 🔍 Search bar */}
+               
+                  <Box
+                    sx={{
+                      bgcolor: "#fff",
+                      px: 2,
+                      py: 0.5,
+                      borderRadius: 2,
+                      display: "flex",
+                      alignItems: "center",
+                      width: 300,
+                      mx: 2,
+                      ml:3
+                    }}
+                  >
+                    <SearchIcon color="action" />
+                    <InputBase
+                      placeholder="Search posts or users…"
+                      sx={{ ml: 5, flex: 1 }}
+                    />
+                  </Box>
+                
                 <Button color="inherit" component={Link} to="/login">
                   Login
                 </Button>

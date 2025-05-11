@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User register(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setJoinedAt(LocalDateTime.now().toString());
+        user.setCreatedAt(LocalDateTime.now());
         user.setFollowers(new HashSet<>());
         user.setFollowing(new HashSet<>());
         return userRepo.save(user);
@@ -55,6 +55,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> getUserById(String id) {
         return userRepo.findById(id);
+    }
+
+    @Override
+    public Optional<User> getUserByEmail(String email) {
+        return userRepo.findByEmail(email);
     }
 
     @Override
@@ -107,17 +112,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<String> getFollowersOfUser(String userId) {
         User user = userRepo.findById(userId)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
         return new ArrayList<>(user.getFollowers());
     }
 
-    // ✅ NEW: Bookmarking posts
     @Override
     public void savePost(String userId, String postId) {
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        user.savePost(postId); // from User.java
+        user.savePost(postId);
         userRepo.save(user);
     }
 
@@ -126,7 +130,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        user.unsavePost(postId); // from User.java
+        user.unsavePost(postId);
         userRepo.save(user);
     }
 

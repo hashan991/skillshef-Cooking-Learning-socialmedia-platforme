@@ -7,16 +7,17 @@ import {
   Snackbar,
   Alert,
   Box,
+  Divider,
 } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext"; // if using context
+import { AuthContext } from "../context/AuthContext";
 
 function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext); // 👈 optional if you're using context
+  const { login } = useContext(AuthContext);
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -31,16 +32,16 @@ function Login() {
 
       const user = res.data;
 
-      // ✅ Save to localStorage
       localStorage.setItem("user", JSON.stringify(user));
-
-      // ✅ Trigger login in context (if using)
       login && login(user);
-
       navigate("/home");
     } catch (err) {
       setError("Invalid email or password");
     }
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:8080/oauth2/authorization/google";
   };
 
   return (
@@ -77,6 +78,7 @@ function Login() {
             Log in to your account
           </Typography>
 
+          {/* Email/Password Login */}
           <form onSubmit={handleSubmit}>
             <TextField
               fullWidth
@@ -113,26 +115,40 @@ function Login() {
               />
               <label htmlFor="keepLoggedIn">Keep me logged in</label>
             </Box>
-
-            <Typography variant="body2" align="center">
-              Don’t have an account?{" "}
-              <span
-                style={{ color: "#007bff", cursor: "pointer" }}
-                onClick={() => navigate("/register")}
-              >
-                Register
-              </span>
-            </Typography>
-
-            <Button
-              fullWidth
-              variant="outlined"
-              sx={{ mt: 2 }}
-              onClick={() => navigate("/")}
-            >
-              BACK TO HOME
-            </Button>
           </form>
+
+          {/* Divider */}
+          <Divider sx={{ my: 2 }}>or</Divider>
+
+          {/* Google Login Button */}
+          <Button
+            fullWidth
+            variant="outlined"
+            color="error"
+            onClick={handleGoogleLogin}
+            sx={{ mb: 2 }}
+          >
+            Continue with Google
+          </Button>
+
+          <Typography variant="body2" align="center">
+            Don’t have an account?{" "}
+            <span
+              style={{ color: "#007bff", cursor: "pointer" }}
+              onClick={() => navigate("/register")}
+            >
+              Register
+            </span>
+          </Typography>
+
+          <Button
+            fullWidth
+            variant="outlined"
+            sx={{ mt: 2 }}
+            onClick={() => navigate("/")}
+          >
+            BACK TO HOME
+          </Button>
 
           {/* Error Toast */}
           <Snackbar
@@ -157,7 +173,6 @@ function Login() {
       />
     </Box>
   );
-  
 }
 
 export default Login;

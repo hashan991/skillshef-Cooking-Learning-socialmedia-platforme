@@ -9,6 +9,7 @@ import {
   ListItemText,
   Divider,
   CircularProgress,
+  TextField,
 } from "@mui/material";
 import { useLocation } from "react-router-dom";
 
@@ -16,6 +17,7 @@ function NotificationPage() {
   const { user } = useContext(AuthContext);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
   const location = useLocation();
 
   // Get userId from route state or fallback to logged-in user
@@ -39,6 +41,10 @@ function NotificationPage() {
     fetchNotifications();
   }, [userId]);
 
+  const filteredNotifications = notifications.filter((n) =>
+    (n.senderUsername || "").toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   if (loading) {
     return (
       <Box p={3}>
@@ -53,12 +59,24 @@ function NotificationPage() {
       <Typography variant="h5" gutterBottom>
         🔔 Your Notifications
       </Typography>
-      
+
+      {/* 🔍 Search input */}
+      <Box mb={2}>
+        <TextField
+          fullWidth
+          size="small"
+          label="Search by Sender Username"
+          variant="outlined"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </Box>
+
       <List>
-        {notifications.length === 0 ? (
+        {filteredNotifications.length === 0 ? (
           <Typography>No notifications found.</Typography>
         ) : (
-          notifications.map((n) => (
+          filteredNotifications.map((n) => (
             <React.Fragment key={n._id}>
               <ListItem alignItems="flex-start">
                 <ListItemText

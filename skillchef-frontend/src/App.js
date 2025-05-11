@@ -16,6 +16,8 @@ import ProgressPage from "./pages/ProgressPage";
 import NotificationsPage from "./pages/NotificationsPage";
 import SavedPosts from "./pages/SavedPosts";
 
+import OAuth2Success from "./pages/OAuth2Success";
+
 function App() {
   return (
     <Router>
@@ -25,9 +27,7 @@ function App() {
           <Route path="/" element={<Startup />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-
           {/* Protected Routes with Layout */}
-
           <Route path="/home" element={<Home />} />
           <Route path="/create" element={<PostForm />} />
           <Route path="/edit-post/:id" element={<EditPost />} />
@@ -39,6 +39,8 @@ function App() {
           <Route path="/progress" element={<ProgressPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/saved" element={<SavedPosts />} />
+          
+          <Route path="/oauth2-success" element={<OAuth2Success />} />
         </Route>
       </Routes>
     </Router>

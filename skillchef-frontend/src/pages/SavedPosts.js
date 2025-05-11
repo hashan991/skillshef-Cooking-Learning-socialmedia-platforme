@@ -3,6 +3,16 @@ import { getSavedPostIds } from "../api/bookmarkApi";
 import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import {
+  Box,
+  Typography,
+  Grid,
+  Card,
+  CardMedia,
+  CardContent,
+  CardActionArea,
+  Container,
+} from "@mui/material";
 
 function SavedPosts() {
   const { user } = useContext(AuthContext);
@@ -10,59 +20,71 @@ function SavedPosts() {
   const navigate = useNavigate();
 
   useEffect(() => {
-   const fetchSavedPosts = async () => {
-     try {
-       const userId = user?.id || user?._id;
-       if (!userId) return;
+    const fetchSavedPosts = async () => {
+      try {
+        const userId = user?.id || user?._id;
+        if (!userId) return;
 
-       const savedIds = await getSavedPostIds(userId);
-       const postResults = await Promise.allSettled(
-         savedIds.map((id) =>
-           axios.get(`http://localhost:8080/api/posts/${id}`)
-         )
-       );
+        const savedIds = await getSavedPostIds(userId);
+        const postResults = await Promise.allSettled(
+          savedIds.map((id) =>
+            axios.get(`http://localhost:8080/api/posts/${id}`)
+          )
+        );
 
-       // Filter out successful responses only
-       const validPosts = postResults
-         .filter((result) => result.status === "fulfilled")
-         .map((result) => result.value.data);
+        const validPosts = postResults
+          .filter((result) => result.status === "fulfilled")
+          .map((result) => result.value.data);
 
-       setPosts(validPosts);
-     } catch (err) {
-       console.error("❌ Error fetching saved posts:", err.message);
-     }
-   };
-
+        setPosts(validPosts);
+      } catch (err) {
+        console.error("❌ Error fetching saved posts:", err.message);
+      }
+    };
 
     if (user) fetchSavedPosts();
   }, [user]);
 
   return (
-    <div>
-      <h2>Saved Posts</h2>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: "1rem",
-        }}
-      >
-        {posts.map((post) => (
-          <div
-            key={post.id}
-            style={{ cursor: "pointer" }}
-            onClick={() => navigate(`/post/${post.id}`)}
-          >
-            <h4>{post.title}</h4>
-            <img
-              src={`http://localhost:8080${post.mediaUrls[0]}`}
-              alt={post.title}
-              width="200"
-            />
-          </div>
-        ))}
-      </div>
-    </div>
+    <Container sx={{ mt: 10 }}>
+      <Typography variant="h4" gutterBottom>
+        🔖 Saved Posts
+      </Typography>
+
+      {posts.length === 0 ? (
+        <Typography>No saved posts found.</Typography>
+      ) : (
+        <Grid container spacing={3}>
+          {posts.map((post) => (
+            <Grid item xs={12} sm={6} md={4} key={post.id}>
+              <Card
+                sx={{
+                  transition: "transform 0.2s",
+                  "&:hover": {
+                    transform: "scale(1.03)",
+                    boxShadow: 4,
+                  },
+                }}
+              >
+                <CardActionArea onClick={() => navigate(`/post/${post.id}`)}>
+                  <CardMedia
+                    component="img"
+                    height="180"
+                    image={`http://localhost:8080${post.mediaUrls[0]}`}
+                    alt={post.title}
+                  />
+                  <CardContent>
+                    <Typography variant="h6" noWrap>
+                      {post.title}
+                    </Typography>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      )}
+    </Container>
   );
 }
 

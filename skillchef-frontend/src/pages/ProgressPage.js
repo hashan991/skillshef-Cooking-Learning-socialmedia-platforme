@@ -8,13 +8,21 @@ import {
 
 import ProgressForm from "../components/tashini/ProgressForm";
 import ProgressList from "../components/tashini/ProgressList";
-import { Container, Typography, Snackbar, Alert } from "@mui/material";
-import { AuthContext } from "../context/AuthContext"; // ✅ Import AuthContext
+import {
+  Container,
+  Typography,
+  Snackbar,
+  Alert,
+  Box,
+  TextField,
+} from "@mui/material";
+import { AuthContext } from "../context/AuthContext";
 
 const ProgressPage = () => {
-  const { user } = useContext(AuthContext); // ✅ Get logged-in user
+  const { user } = useContext(AuthContext);
   const [updates, setUpdates] = useState([]);
   const [editingUpdate, setEditingUpdate] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [toast, setToast] = useState({
     open: false,
@@ -32,12 +40,10 @@ const ProgressPage = () => {
 
   const loadProgress = async () => {
     try {
-      const res = await getAllProgress(); // No token needed
+      const res = await getAllProgress();
       const allProgress = res.data;
 
-      // ✅ Filter progress by userId
       const userProgress = allProgress.filter((p) => p.userId === user?.id);
-
       setUpdates(userProgress);
     } catch (err) {
       showToast("Failed to load progress updates", "error");
@@ -52,7 +58,7 @@ const ProgressPage = () => {
 
   const handleCreate = async (formData) => {
     try {
-      await createProgress(formData); // No token needed
+      await createProgress(formData);
       showToast("Progress created successfully!");
       loadProgress();
     } catch (err) {
@@ -62,7 +68,7 @@ const ProgressPage = () => {
 
   const handleUpdate = async (formData) => {
     try {
-      await updateProgress(editingUpdate.id, formData); // No token needed
+      await updateProgress(editingUpdate.id, formData);
       setEditingUpdate(null);
       showToast("Progress updated successfully!");
       loadProgress();
@@ -89,7 +95,7 @@ const ProgressPage = () => {
     );
     if (!confirm) return;
     try {
-      await deleteProgress(id); // No token needed
+      await deleteProgress(id);
       showToast("Progress deleted successfully!");
       loadProgress();
     } catch (err) {
@@ -101,8 +107,14 @@ const ProgressPage = () => {
     setEditingUpdate(null);
   };
 
+  // 🔍 Filter updates by searchQuery (description)
+  // 🔍 Filter updates by searchQuery (updateText)
+  const filteredUpdates = updates.filter((update) =>
+    (update.updateText || "").toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <Container maxWidth="md" sx={{ py: 5 }}>
+    <Container maxWidth="md" sx={{ py: 5 , mt:5 }}>
       <Typography variant="h4" align="center" gutterBottom>
         📚 Learning Progress
       </Typography>
@@ -112,13 +124,25 @@ const ProgressPage = () => {
         editingData={editingUpdate}
         onCancel={handleCancelEdit}
       />
-
-      <Typography variant="h5" mt={5} mb={2}>
-        Your Updates
-      </Typography>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mt={5}
+        mb={2}
+      >
+        <Typography variant="h5">Your Updates</Typography>
+        <TextField
+          size="small"
+          label="Search by Description"
+          variant="outlined"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </Box>
 
       <ProgressList
-        updates={updates}
+        updates={filteredUpdates}
         onEdit={handleEdit}
         onDelete={handleDelete}
       />

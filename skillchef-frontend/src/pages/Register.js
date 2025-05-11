@@ -21,7 +21,9 @@ function Register() {
     profilePic: "/uploads/default.jpg",
     location: "",
   });
+
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const handleChange = (e) =>
@@ -30,17 +32,25 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:8080/api/users/register", form);
+      const res = await axios.post(
+        "http://localhost:8080/api/users/register",
+        form
+      );
+
+      // ✅ Store user in localStorage
+      localStorage.setItem("user", JSON.stringify(res.data));
+
+      // ✅ Show success and redirect
       setSuccess(true);
-      setTimeout(() => navigate("/login"), 1000);
+      setTimeout(() => navigate("/home"), 1000);
     } catch (err) {
-      alert("Registration failed");
+      setError("Registration failed. Please try again.");
     }
   };
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh" }}>
-      {/* Left - Register Form */}
+      {/* Left - Form */}
       <Box
         sx={{
           flex: 1,
@@ -76,6 +86,7 @@ function Register() {
               fullWidth
               label="Email"
               name="email"
+              type="email"
               value={form.email}
               onChange={handleChange}
               margin="normal"
@@ -109,13 +120,24 @@ function Register() {
               Register
             </Button>
           </form>
+
+          {/* ✅ Snackbar for success */}
           <Snackbar open={success} autoHideDuration={3000}>
-            <Alert severity="success">Registration Successful!</Alert>
+            <Alert severity="success">Registration successful!</Alert>
+          </Snackbar>
+
+          {/* ❌ Snackbar for error */}
+          <Snackbar
+            open={!!error}
+            autoHideDuration={3000}
+            onClose={() => setError(null)}
+          >
+            <Alert severity="error">{error}</Alert>
           </Snackbar>
         </Paper>
       </Box>
 
-      {/* Right - Image */}
+      {/* Right - Background Image */}
       <Box
         sx={{
           flex: 1,
@@ -126,7 +148,6 @@ function Register() {
       />
     </Box>
   );
-  
 }
 
 export default Register;

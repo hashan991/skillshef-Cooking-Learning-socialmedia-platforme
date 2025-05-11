@@ -124,248 +124,6 @@ function Startup() {
           </Box>
         </Box>
 
-        {/* Features Section - Professional */}
-        <Box
-          py={12}
-          px={{ xs: 3, md: 12 }}
-          sx={{
-            background: "linear-gradient(120deg, #ffffff, #f8f8f8, #f0fcf5)",
-            position: "relative",
-            overflow: "hidden",
-            "&::before": {
-              content: '""',
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              height: "5px",
-              background: "linear-gradient(90deg, #00754a, #4CAF50, #00754a)",
-            },
-          }}
-          id="features"
-        >
-          {/* Decorative Elements */}
-          <Box
-            sx={{
-              position: "absolute",
-              top: "5%",
-              left: "5%",
-              width: "150px",
-              height: "150px",
-              borderRadius: "50%",
-              background:
-                "radial-gradient(circle, rgba(0,117,74,0.03) 0%, rgba(0,117,74,0) 70%)",
-              zIndex: 0,
-            }}
-          />
-          <Box
-            sx={{
-              position: "absolute",
-              bottom: "10%",
-              right: "5%",
-              width: "200px",
-              height: "200px",
-              borderRadius: "50%",
-              background:
-                "radial-gradient(circle, rgba(0,117,74,0.05) 0%, rgba(0,117,74,0) 70%)",
-              zIndex: 0,
-            }}
-          />
-          <Typography
-            variant="h3"
-            align="center"
-            fontWeight="bold"
-            gutterBottom
-            sx={{
-              mb: 2,
-              position: "relative",
-              marginLeft: "auto",
-              marginRight: "auto",
-              width: "fit-content",
-            }}
-          >
-            PLATFORM FEATURES
-          </Typography>
-          {/* Subtitle */}
-          <Typography
-            variant="h6"
-            align="center"
-            color="text.secondary"
-            sx={{
-              mb: 8,
-              maxWidth: "700px",
-              mx: "auto",
-              fontWeight: 400,
-              fontSize: "1.1rem",
-            }}
-          >
-            Discover our powerful tools designed to enhance your culinary
-            journey
-          </Typography>
-          <Grid container spacing={4} sx={{ justifyContent: "center" }}>
-            {[
-              {
-                title: "Skill Sharing Posts",
-                description:
-                  "Upload and share your cooking creations using photos or videos. Engage with others through likes and comments.",
-                icon: <Comment sx={{ fontSize: 40, color: "#00754a" }} />,
-                highlight: "Most Popular",
-              },
-              {
-                title: "Learning Progress Updates",
-                description:
-                  "Document your culinary journey by sharing progress and milestones with your followers.",
-                icon: <School sx={{ fontSize: 40, color: "#00754a" }} />,
-                highlight: "Growth Tracker",
-              },
-              {
-                title: "Learning Plans",
-                description:
-                  "Create structured plans to master new skills or cuisines and track your daily progress.",
-                icon: <AutoAwesome sx={{ fontSize: 40, color: "#00754a" }} />,
-                highlight: "Customizable",
-              },
-              {
-                title: "Social Features",
-                description:
-                  "Follow users, explore trending content, and build a culinary network around your interests.",
-                icon: <PeopleAlt sx={{ fontSize: 40, color: "#00754a" }} />,
-                highlight: "Community",
-              },
-              {
-                title: "Post Analytics",
-                description:
-                  "Understand your audience better with insights into views and engagement.",
-                icon: <BarChart sx={{ fontSize: 40, color: "#00754a" }} />,
-                highlight: "Insights",
-              },
-              {
-                title: "Real-time Notifications",
-                description:
-                  "Get instant alerts for likes, comments, and new followers – stay updated anytime.",
-                icon: (
-                  <NotificationsActive
-                    sx={{ fontSize: 40, color: "#00754a" }}
-                  />
-                ),
-                highlight: "Instant",
-              },
-            ].map((feature, index) => (
-              <Grid item xs={12} sm={6} md={4} key={index}>
-                <Box
-                  sx={{
-                    p: 4,
-                    borderRadius: "16px",
-                    backgroundColor: "#fff",
-                    height: "100%",
-                    minHeight: "280px", // Fixed minimum height for consistency
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "flex-start",
-                    boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)",
-                    transition: "all 0.3s ease",
-                    position: "relative",
-                    overflow: "hidden",
-                    "&:hover": {
-                      transform: "translateY(-5px)",
-                      boxShadow: "0px 10px 25px rgba(0, 0, 0, 0.08)",
-                    },
-                    "&::after": {
-                      content: '""',
-                      position: "absolute",
-                      bottom: 0,
-                      left: 0,
-                      width: "100%",
-                      height: "3px",
-                      background: "linear-gradient(90deg, #00754a, #4CAF50)",
-                      opacity: 0,
-                      transition: "opacity 0.3s ease",
-                    },
-                    "&:hover::after": {
-                      opacity: 1,
-                    },
-                  }}
-                >
-                  {/* Feature highlight tag */}
-                  {feature.highlight && (
-                    <Box
-                      sx={{
-                        position: "absolute",
-                        top: 15,
-                        right: 15,
-                        backgroundColor: "rgba(0,117,74,0.08)",
-                        color: "#00754a",
-                        borderRadius: "12px",
-                        px: 1.5,
-                        py: 0.5,
-                        fontSize: "0.75rem",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {feature.highlight}
-                    </Box>
-                  )}
-
-                  <Box
-                    mb={3}
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      width: "70px",
-                      height: "70px",
-                      borderRadius: "50%",
-                      backgroundColor: "rgba(0,117,74,0.1)",
-                      transition: "all 0.3s ease",
-                      marginBottom: "20px", // Consistent spacing
-                      "&:hover": {
-                        backgroundColor: "rgba(0,117,74,0.15)",
-                        transform: "scale(1.05)",
-                      },
-                    }}
-                  >
-                    {feature.icon}
-                  </Box>
-
-                  <Typography
-                    variant="h6"
-                    fontWeight="bold"
-                    gutterBottom
-                    sx={{
-                      position: "relative",
-                      paddingBottom: "12px", // Consistent spacing
-                      marginBottom: "16px", // Consistent spacing
-                      "&::before": {
-                        content: '""',
-                        position: "absolute",
-                        bottom: 0,
-                        left: 0,
-                        width: "30px",
-                        height: "2px",
-                        backgroundColor: "#00754a",
-                      },
-                    }}
-                  >
-                    {feature.title}
-                  </Typography>
-
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{
-                      lineHeight: 1.6,
-                      flex: 1, // This will push content to fill available space
-                    }}
-                  >
-                    {feature.description}
-                  </Typography>
-                </Box>
-              </Grid>
-            ))}
-          </Grid>
-          
-        </Box>
-
         {/* Contact Us Section */}
         <Box py={6} px={{ xs: 2, md: 10 }} bgcolor="white" id="contact-us">
           <Typography
@@ -430,7 +188,7 @@ function Startup() {
                   <Box>
                     <Typography fontWeight="bold">General Enquiries</Typography>
                     <Typography color="text.secondary">
-                      prirubber@email.com
+                      SkillChef@email.com
                     </Typography>
                   </Box>
                 </Box>
@@ -528,9 +286,15 @@ function Startup() {
                 sx={{ fontSize: "1.1rem", lineHeight: 1.8 }}
                 paragraph
               >
-                At HomiTask, we specialize in providing an intelligent and
-                efficient home task management solution designed to streamline
-                household organization.
+                At SkillChef, we specialize in empowering home cooks and
+                culinary learners through an interactive skill-sharing and
+                learning platform. Our mission is to bring together passionate
+                food lovers, enabling them to showcase their cooking skills,
+                share learning journeys, and connect with a vibrant community.
+                Whether you're mastering a new recipe or building a step-by-step
+                learning plan, SkillChef streamlines your culinary growth with
+                engaging tools, social features, and personalized progress
+                tracking.
               </Typography>
               <Typography
                 variant="body1"

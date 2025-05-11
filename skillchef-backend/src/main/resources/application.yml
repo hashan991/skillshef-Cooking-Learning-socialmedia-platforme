@@ -1,0 +1,21 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 1008040052228-j47ocns8g98gvmqkv5ds4gvhgdeg4hqb.apps.googleusercontent.com
+            client-secret: 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 
+            scope:
+              - email
+              - profile
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}" # ✅ default format
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+
+      # ✅ After Spring login success, redirect to frontend
+      oauth2Login:
+        defaultSuccessUrl: http://localhost:3000/oauth2-success

@@ -10,6 +10,7 @@ import {
   Button,
   Stack,
   Paper,
+  TextField,
 } from "@mui/material";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -19,10 +20,10 @@ function Home() {
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [suggestedUsers, setSuggestedUsers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     axios.get("http://localhost:8080/api/posts").then((res) => {
-      // Sort posts newest first
       const sorted = res.data.sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
@@ -52,6 +53,11 @@ function Home() {
     }
   };
 
+  // ✅ Filter posts by title
+  const filteredPosts = posts.filter((post) =>
+    (post.title || "").toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <Container sx={{ mt: 12, ml: 30 }}>
       <Grid container spacing={3}>
@@ -60,7 +66,20 @@ function Home() {
           <Typography variant="h4" gutterBottom>
             SkillChef Feed 🍳
           </Typography>
-          {posts.map((post) => (
+
+          {/* 🔍 Search Input */}
+          <Box mb={2}>
+            <TextField
+              fullWidth
+              size="small"
+              label="Search by Title"
+              variant="outlined"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </Box>
+
+          {filteredPosts.map((post) => (
             <PostCard key={post.id} post={post} onDelete={handlePostDelete} />
           ))}
         </Grid>
